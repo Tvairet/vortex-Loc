@@ -69,7 +69,8 @@ function Home() {
         </button>
 
       </section>
-      
+
+      <Footer />
     </div>
   )
 }

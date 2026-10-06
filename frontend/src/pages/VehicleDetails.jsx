@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import Header from "../components/header"
+import Footer from "../components/footer"
 
 function VehicleDetails() {
   const { id } = useParams()
@@ -82,6 +83,7 @@ function VehicleDetails() {
 
       </main>
 
+      <Footer />
     </div>
   )
 }

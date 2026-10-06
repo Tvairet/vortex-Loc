@@ -1,3 +1,5 @@
+import Footer from "../components/footer"
+
 function Fleet() {
   const vehicles = [
   {
@@ -119,6 +121,7 @@ function Fleet() {
 
       </main>
 
+      <Footer />
     </div>
   )
 }
