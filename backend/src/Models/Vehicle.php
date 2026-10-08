@@ -2,30 +2,55 @@
 
 namespace App\Models;
 
+use App\Core\Database;
 use PDO;
 
 class Vehicle
 {
-    public function __construct(private PDO $pdo)
+    private PDO $db;
+
+    public function __construct(Database $database)
     {
+        $this->db = $database->getConnection();
     }
 
+    /**
+     * Récupère tous les véhicules disponibles.
+     */
     public function findAllAvailable(): array
     {
-        $statement = $this->pdo->query(
-            'SELECT * FROM vehicles WHERE available = 1 ORDER BY id ASC'
-        );
+        $sql = "
+            SELECT *
+            FROM vehicles
+            WHERE available = 1
+            ORDER BY id ASC
+        ";
+
+        $statement = $this->db->query($sql);
 
         return $statement->fetchAll();
     }
 
-    public function findById(int $id): array|false
+    /**
+     * Récupère un véhicule par son identifiant.
+     */
+    public function findById(int $id): ?array
     {
-        $statement = $this->pdo->prepare(
-            'SELECT * FROM vehicles WHERE id = :id LIMIT 1'
-        );
-        $statement->execute(['id' => $id]);
+        $sql = "
+            SELECT *
+            FROM vehicles
+            WHERE id = :id
+            LIMIT 1
+        ";
 
-        return $statement->fetch();
+        $statement = $this->db->prepare($sql);
+
+        $statement->execute([
+            'id' => $id
+        ]);
+
+        $vehicle = $statement->fetch();
+
+        return $vehicle ?: null;
     }
 }

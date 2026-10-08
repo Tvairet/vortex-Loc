@@ -1,0 +1,159 @@
+
+/* =========================
+   CONNEXION VORTEX'LOC
+========================= */
+
+.login-page {
+  min-height: 100vh;
+  background: #08090a;
+  color: #f5f5f5;
+}
+
+.login-content {
+  max-width: 750px;
+  margin: 0 auto;
+  padding: 150px 6% 100px;
+}
+
+.login-heading {
+  margin-bottom: 45px;
+}
+
+.login-eyebrow {
+  color: #c6ff2e;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 3px;
+}
+
+.login-heading h1 {
+  margin-top: 20px;
+  font-size: clamp(50px, 6vw, 80px);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -4px;
+}
+
+.login-heading h1 span {
+  color: #c6ff2e;
+}
+
+.login-heading p {
+  margin-top: 22px;
+  color: #8c8d91;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+/* FORMULAIRE */
+
+.login-form {
+  padding: 40px;
+  background: #111214;
+  border: 1px solid #292a2d;
+}
+
+.login-form h2 {
+  margin-bottom: 30px;
+  font-size: 24px;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.login-field label {
+  color: #b5b6ba;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.login-field input {
+  width: 100%;
+  padding: 16px;
+  background: #1c1d20;
+  color: #ffffff;
+  border: 1px solid #36373b;
+  font: inherit;
+}
+
+.login-field input:focus {
+  outline: none;
+  border-color: #c6ff2e;
+}
+
+/* BOUTON */
+
+.login-submit {
+  width: 100%;
+  padding: 18px 24px;
+  margin-top: 8px;
+  background: #c6ff2e;
+  color: #08090a;
+  font-size: 15px;
+  font-weight: 800;
+  transition: background 0.2s;
+}
+
+.login-submit:hover {
+  background: #d5ff63;
+}
+
+.login-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* MESSAGES */
+
+.login-success,
+.login-error {
+  margin-bottom: 25px;
+  padding: 14px 16px;
+  font-size: 14px;
+}
+
+.login-success {
+  color: #c6ff2e;
+  background: #1b2511;
+  border: 1px solid #688621;
+}
+
+.login-error {
+  color: #ffaaaa;
+  background: #341b1b;
+  border: 1px solid #9a3939;
+}
+
+.login-register-link {
+  margin-top: 25px;
+  text-align: center;
+  color: #8c8d91;
+  font-size: 14px;
+}
+
+.login-register-link a {
+  color: #c6ff2e;
+  font-weight: 700;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 700px) {
+  .login-content {
+    padding: 125px 5% 70px;
+  }
+
+  .login-heading h1 {
+    letter-spacing: -2px;
+  }
+
+  .login-form {
+    padding: 24px;
+  }
+}

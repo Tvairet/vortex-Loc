@@ -1,0 +1,160 @@
+
+/* =========================
+   ESPACE CLIENT VORTEX'LOC
+========================= */
+
+.account-page {
+  min-height: 100vh;
+  background: #08090a;
+  color: #f5f5f5;
+}
+
+.account-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 150px 6% 100px;
+}
+
+.account-heading {
+  margin-bottom: 60px;
+}
+
+.account-eyebrow {
+  color: #c6ff2e;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 3px;
+}
+
+.account-heading h1 {
+  margin-top: 22px;
+  font-size: clamp(48px, 6vw, 85px);
+  line-height: 1;
+  letter-spacing: -4px;
+  font-weight: 900;
+}
+
+.account-heading h1 span {
+  color: #c6ff2e;
+}
+
+.account-heading p {
+  max-width: 600px;
+  margin-top: 25px;
+  color: #8c8d91;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+/* GRILLE */
+
+.account-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 30px;
+}
+
+.account-card {
+  padding: 35px;
+  background: #111214;
+  border: 1px solid #292a2d;
+}
+
+.account-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 35px;
+}
+
+.account-card-header h2 {
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.account-card-icon {
+  font-size: 26px;
+}
+
+/* INFORMATIONS CLIENT */
+
+.account-information {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 30px;
+}
+
+.account-information div {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.account-information span {
+  color: #8c8d91;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.account-information strong {
+  font-size: 16px;
+  overflow-wrap: anywhere;
+}
+
+/* RÉSERVATIONS */
+
+.account-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 30px;
+}
+
+.account-empty p {
+  color: #8c8d91;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.account-button {
+  display: inline-flex;
+  padding: 16px 22px;
+  background: #c6ff2e;
+  color: #08090a;
+  font-size: 14px;
+  font-weight: 800;
+  transition: background 0.2s ease;
+}
+
+.account-button:hover {
+  background: #d5ff63;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+  .account-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .account-content {
+    padding: 125px 5% 70px;
+  }
+
+  .account-heading h1 {
+    letter-spacing: -2px;
+  }
+
+  .account-card {
+    padding: 24px;
+  }
+
+  .account-information {
+    grid-template-columns: 1fr;
+  }
+}

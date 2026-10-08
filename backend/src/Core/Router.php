@@ -47,11 +47,16 @@ class Router
 
     private function pathFromUri(string $uri): string
     {
-        $path = parse_url($uri, PHP_URL_PATH) ?: '/';
-        $path = preg_replace('#^.*?/backend#', '', $path) ?? $path;
-        $path = preg_replace('#\.php$#', '', $path) ?? $path;
+    $path = parse_url($uri, PHP_URL_PATH) ?: '/';
 
-        return $this->normalize($path);
+    // Retire le chemin physique de l'API
+    $basePath = '/vortex-loc/backend/public';
+
+    if (str_starts_with($path, $basePath . '/')) {
+        $path = substr($path, strlen($basePath));
+    }
+
+    return $this->normalize($path);
     }
 
     private function normalize(string $path): string
