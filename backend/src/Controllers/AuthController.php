@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Core\Response;
 use App\Services\AuthService;
+use App\Core\Session;
 use InvalidArgumentException;
 use PDOException;
 use Throwable;
@@ -88,17 +89,7 @@ class AuthController
             $user = $this->authService->login($data);
 
             // Configuration de la session PHP
-            if (session_status() === PHP_SESSION_NONE) {
-                session_start([
-                    'use_strict_mode' => true,
-                    'use_only_cookies' => true,
-                    'cookie_httponly' => true,
-                    'cookie_samesite' => 'Lax',
-                    'cookie_secure' => !empty($_SERVER['HTTPS'])
-                        && $_SERVER['HTTPS'] !== 'off',
-                    'cookie_path' => '/vortex-loc/backend/public/'
-                ]);
-            }
+            Session::start();
 
             // Nouvel identifiant de session après connexion
             session_regenerate_id(true);
@@ -130,17 +121,7 @@ class AuthController
     public function me(): void
     {
         try {
-            if (session_status() === PHP_SESSION_NONE) {
-                session_start([
-                    'use_strict_mode' => true,
-                    'use_only_cookies' => true,
-                    'cookie_httponly' => true,
-                    'cookie_samesite' => 'Lax',
-                    'cookie_secure' => !empty($_SERVER['HTTPS'])
-                        && $_SERVER['HTTPS'] !== 'off',
-                    'cookie_path' => '/vortex-loc/backend/public/'
-                ]);
-            }
+            Session::start();
 
             if (empty($_SESSION['user_id'])) {
                 Response::json([
@@ -179,17 +160,7 @@ class AuthController
     public function logout(): void
     {
         try {
-            if (session_status() === PHP_SESSION_NONE) {
-                session_start([
-                    'use_strict_mode' => true,
-                    'use_only_cookies' => true,
-                    'cookie_httponly' => true,
-                    'cookie_samesite' => 'Lax',
-                    'cookie_secure' => !empty($_SERVER['HTTPS'])
-                        && $_SERVER['HTTPS'] !== 'off',
-                    'cookie_path' => '/vortex-loc/backend/public/'
-                ]);
-            }
+            Session::start();
 
             // Supprimer les données de session
             $_SESSION = [];

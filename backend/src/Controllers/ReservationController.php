@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Core\Response;
 use App\Services\ReservationService;
+use App\Core\Session;
 use InvalidArgumentException;
 use RuntimeException;
 use Throwable;
@@ -19,17 +20,7 @@ class ReservationController
      */
     private function startSession(): void
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start([
-                'use_strict_mode' => true,
-                'use_only_cookies' => true,
-                'cookie_httponly' => true,
-                'cookie_samesite' => 'Lax',
-                'cookie_secure' => !empty($_SERVER['HTTPS'])
-                    && $_SERVER['HTTPS'] !== 'off',
-                'cookie_path' => '/vortex-loc/backend/public/'
-            ]);
-        }
+        Session::start();
     }
 
     /**

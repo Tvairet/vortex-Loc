@@ -15,11 +15,28 @@ class AuthService
      */
     public function register(array $data): array
     {
-        $firstName = trim((string) ($data['first_name'] ?? ''));
-        $lastName = trim((string) ($data['last_name'] ?? ''));
-        $email = strtolower(trim((string) ($data['email'] ?? '')));
-        $password = $data['password'] ?? '';
-        $phone = trim((string) ($data['phone'] ?? ''));
+        $firstName = $data['first_name'] ?? null;
+        $lastName = $data['last_name'] ?? null;
+        $email = $data['email'] ?? null;
+        $password = $data['password'] ?? null;
+        $phone = $data['phone'] ?? null;
+
+        if (
+            !is_string($firstName) ||
+            !is_string($lastName) ||
+            !is_string($email) ||
+            !is_string($password) ||
+            ($phone !== null && !is_string($phone))
+        ) {
+            throw new InvalidArgumentException(
+                'Les données du formulaire sont invalides.'
+            );
+        }
+
+        $firstName = trim($firstName);
+        $lastName = trim($lastName);
+        $email = strtolower(trim($email));
+        $phone = trim($phone ?? '');
 
         // Validation des champs obligatoires
         if ($firstName === '' || $lastName === '' || $email === '') {
@@ -108,8 +125,16 @@ class AuthService
      */
     public function login(array $data): array
     {
-        $email = strtolower(trim((string) ($data['email'] ?? '')));
-        $password = $data['password'] ?? '';
+        $email = $data['email'] ?? null;
+        $password = $data['password'] ?? null;
+
+        if (!is_string($email) || !is_string($password)) {
+            throw new InvalidArgumentException(
+                'Email ou mot de passe invalide.'
+            );
+        }
+
+        $email = strtolower(trim($email));
 
         if (
             !filter_var($email, FILTER_VALIDATE_EMAIL) ||

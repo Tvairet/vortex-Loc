@@ -150,6 +150,50 @@ class Vehicle
     }
 
     /**
+     * Statistiques sur l'état actuel de la flotte.
+     *
+     * Un véhicule est disponible uniquement si :
+     * - available = 1
+     * - vehicle_status = 'available'
+     */
+
+    public function getFleetStatistics(): array
+    {
+        $statement = $this->db->query("
+        SELECT
+            COUNT(*) AS total,
+
+            COALESCE(SUM(
+                CASE
+                    WHEN available = 1
+                     AND vehicle_status = 'available'
+                    THEN 1
+                    ELSE 0
+                END
+            ), 0) AS available,
+
+            COALESCE(SUM(
+                CASE
+                    WHEN available = 0
+                      OR vehicle_status <> 'available'
+                    THEN 1
+                    ELSE 0
+                END
+            ), 0) AS unavailable
+
+        FROM vehicles
+    ");
+
+        $stats = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return [
+            'total' => (int) $stats['total'],
+            'available' => (int) $stats['available'],
+            'unavailable' => (int) $stats['unavailable']
+        ];
+    }
+
+    /**
      * Centralise les paramètres communs
      * à la création et à la modification.
      */

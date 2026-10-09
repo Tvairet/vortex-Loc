@@ -14,6 +14,7 @@ use App\Services\AuthService;
 use App\Services\ReservationService;
 use App\Services\VehicleUnavailabilityService;
 use App\Services\UserService;
+use App\Services\StatisticsService;
 
 use App\Controllers\VehicleController;
 use App\Controllers\AuthController;
@@ -21,38 +22,14 @@ use App\Controllers\ReservationController;
 use App\Controllers\AdminController;
 
 use App\Middleware\AdminMiddleware;
+use App\Middleware\CsrfMiddleware;
 /*
 |--------------------------------------------------------------------------
 | CHARGEMENT DES CLASSES
 |--------------------------------------------------------------------------
 */
 
-// Core
-require_once __DIR__ . '/../src/Core/Database.php';
-require_once __DIR__ . '/../src/Core/Response.php';
-require_once __DIR__ . '/../src/Core/Router.php';
-
-// Models
-require_once __DIR__ . '/../src/Models/Vehicle.php';
-require_once __DIR__ . '/../src/Models/User.php';
-require_once __DIR__ . '/../src/Models/Reservation.php';
-require_once __DIR__ . '/../src/Models/VehicleUnavailability.php';
-
-// Services
-require_once __DIR__ . '/../src/Services/VehicleService.php';
-require_once __DIR__ . '/../src/Services/AuthService.php';
-require_once __DIR__ . '/../src/Services/ReservationService.php';
-require_once __DIR__ . '/../src/Services/VehicleUnavailabilityService.php';
-require_once __DIR__ . '/../src/Services/UserService.php';
-
-// Controllers
-require_once __DIR__ . '/../src/Controllers/VehicleController.php';
-require_once __DIR__ . '/../src/Controllers/AuthController.php';
-require_once __DIR__ . '/../src/Controllers/ReservationController.php';
-require_once __DIR__ . '/../src/Controllers/AdminController.php';
-
-// Middleware
-require_once __DIR__ . '/../src/Middleware/AdminMiddleware.php';
+require_once __DIR__ . '/../autoload.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -69,6 +46,18 @@ header('Vary: Origin');
 // Gestion des requêtes OPTIONS
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
+    exit;
+}
+
+/*
+|--------------------------------------------------------------------------
+| PROTECTION DES REQUÊTES DE MODIFICATION
+|--------------------------------------------------------------------------
+*/
+
+$csrfMiddleware = new CsrfMiddleware();
+
+if (!$csrfMiddleware->handle()) {
     exit;
 }
 
@@ -146,8 +135,10 @@ try {
     $adminMiddleware = new AdminMiddleware($userModel);
 
     $unavailabilityService = new VehicleUnavailabilityService($unavailabilityModel, $vehicleModel);
+    
+    $statisticsService = new StatisticsService($reservationModel, $vehicleModel, $userModel);
 
-    $adminController = new AdminController($adminMiddleware, $reservationService, $vehicleService, $unavailabilityService, $userService);
+    $adminController = new AdminController($adminMiddleware, $reservationService, $vehicleService, $unavailabilityService, $userService, $statisticsService);
 
     /*
     |--------------------------------------------------------------------------
@@ -296,6 +287,11 @@ try {
     $router->patch(
         '/api/admin/reservations/{id}/reject',
         [$adminController, 'rejectReservation']
+    );
+    // Statistiques générales — accès administrateur
+    $router->get(
+        '/api/admin/stats',
+        [$adminController, 'statistics']
     );
 
     $router->dispatch(

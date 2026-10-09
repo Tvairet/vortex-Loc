@@ -319,4 +319,40 @@ class Reservation
 
         return $statement->rowCount() === 1;
     }
+
+    /**
+     * Compte les réservations par statut.
+     *
+     * Statuts possibles :
+     * pending, confirmed, cancelled, rejected.
+     */
+    public function getStatusStatistics(): array
+    {
+        $statement = $this->db->query("
+        SELECT
+            status,
+            COUNT(*) AS total
+        FROM reservations
+        GROUP BY status
+    ");
+
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Calcule la valeur totale des réservations confirmées.
+     *
+     * Il s'agit du montant réservé, et non
+     * d'un chiffre d'affaires réellement encaissé.
+     */
+    public function getConfirmedRevenue(): float
+    {
+        $statement = $this->db->query("
+        SELECT COALESCE(SUM(total_price), 0)
+        FROM reservations
+        WHERE status = 'confirmed'
+    ");
+
+        return (float) $statement->fetchColumn();
+    }
 }

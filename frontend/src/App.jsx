@@ -11,6 +11,7 @@ import AdminDashboard from "./pages/AdminDashboard"
 import AdminReservations from "./pages/AdminReservations"
 import AdminVehicles from "./pages/AdminVehicles"
 import AdminUsers from "./pages/AdminUsers"
+import AdminStats from "./pages/AdminStats"
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         <Route path="/admin/reservations" element={<AdminReservations />} />
         <Route path="/admin/vehicles" element={<AdminVehicles />} />
         <Route path="/admin/users" element={<AdminUsers />} />
+        <Route path="/admin/stats" element={<AdminStats />} />
 
       </Routes>
 

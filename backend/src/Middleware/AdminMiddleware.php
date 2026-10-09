@@ -3,6 +3,7 @@
 namespace App\Middleware;
 
 use App\Core\Response;
+use App\Core\Session;
 use App\Models\User;
 
 class AdminMiddleware
@@ -17,21 +18,8 @@ class AdminMiddleware
      */
     public function handle(): bool
     {
-        // Démarrer la session si nécessaire
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start([
-                'use_strict_mode' => true,
-                'use_only_cookies' => true,
-                'cookie_httponly' => true,
-                'cookie_samesite' => 'Lax',
-                'cookie_secure' =>
-                !empty($_SERVER['HTTPS']) &&
-                    $_SERVER['HTTPS'] !== 'off',
-                'cookie_path' => '/vortex-loc/backend/public/'
-            ]);
-        }
+        Session::start();
 
-        // Aucun utilisateur connecté
         if (empty($_SESSION['user_id'])) {
             Response::json([
                 'message' => 'Authentification requise.'
