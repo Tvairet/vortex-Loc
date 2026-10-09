@@ -1,4 +1,3 @@
-
 <?php
 
 namespace App\Models;
@@ -13,6 +12,71 @@ class Reservation
     public function __construct(Database $database)
     {
         $this->db = $database->getConnection();
+    }
+
+    /**
+     * Exécute une opération dans une transaction,
+     * en verrouillant le véhicule concerné.
+     */
+    public function withVehicleLock(
+        int $vehicleId,
+        callable $callback
+    ): mixed {
+        $this->db->beginTransaction();
+
+        try {
+            $statement = $this->db->prepare("
+            SELECT id
+            FROM vehicles
+            WHERE id = :id
+            FOR UPDATE
+        ");
+
+            $statement->execute(['id' => $vehicleId]);
+
+            if (!$statement->fetch()) {
+                throw new \RuntimeException(
+                    'Véhicule introuvable.'
+                );
+            }
+
+            $result = $callback();
+
+            $this->db->commit();
+
+            return $result;
+        } catch (\Throwable $error) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+
+            throw $error;
+        }
+    }
+
+    /**
+     * Vérifie la disponibilité d'un véhicule.
+     */
+    public function isVehicleAvailable(int $vehicleId): bool
+    {
+        $sql = "
+        SELECT available, vehicle_status
+        FROM vehicles
+        WHERE id = :id
+        LIMIT 1
+    ";
+
+        $statement = $this->db->prepare($sql);
+        $statement->execute(['id' => $vehicleId]);
+
+        $vehicle = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if (!$vehicle) {
+            return false;
+        }
+
+        return (int) $vehicle['available'] === 1
+            && $vehicle['vehicle_status'] === 'available';
     }
 
     /**
@@ -147,5 +211,112 @@ class Reservation
         $reservation = $statement->fetch();
 
         return $reservation ?: null;
+    }
+
+    /**
+     * Annule une réservation appartenant à un utilisateur.
+     *
+     * Conditions :
+     * - Réservation appartenant au client
+     * - Statut pending ou confirmed
+     * - Annulation au moins 24h avant le départ
+     *
+     * Hypothèse actuelle : départ à 00h00,
+     * heure de Paris.
+     */
+    public function cancelByUserId(
+        int $reservationId,
+        int $userId
+    ): bool {
+        $sql = "
+        UPDATE reservations
+        SET status = 'cancelled'
+        WHERE id = :reservation_id
+          AND user_id = :user_id
+          AND status IN ('pending', 'confirmed')
+          AND TIMESTAMP(start_date) >= :deadline
+    ";
+
+        $departureLimit = (new \DateTimeImmutable(
+            '+24 hours',
+            new \DateTimeZone('Europe/Paris')
+        ))->format('Y-m-d H:i:s');
+
+        $statement = $this->db->prepare($sql);
+
+        $statement->execute([
+            'reservation_id' => $reservationId,
+            'user_id' => $userId,
+            'deadline' => $departureLimit
+        ]);
+
+        return $statement->rowCount() === 1;
+    }
+
+    /**
+     * Récupère toutes les réservations pour l'administration.
+     */
+    public function findAllForAdmin(): array
+    {
+        $sql = "
+        SELECT
+            r.id,
+            r.user_id,
+            r.vehicle_id,
+            r.customer_name,
+            r.customer_email,
+            r.pickup_location,
+            r.start_date,
+            r.end_date,
+            r.total_price,
+            r.status,
+            r.created_at,
+            v.brand,
+            v.model
+        FROM reservations r
+        INNER JOIN vehicles v
+            ON v.id = r.vehicle_id
+        ORDER BY r.created_at DESC, r.id DESC
+    ";
+
+        $statement = $this->db->query($sql);
+
+        return $statement->fetchAll();
+    }
+
+    /**
+     * Confirme une réservation en attente.
+     */
+    public function confirmById(int $id): bool
+    {
+        $sql = "
+        UPDATE reservations
+        SET status = 'confirmed'
+        WHERE id = :id
+          AND status = 'pending'
+    ";
+
+        $statement = $this->db->prepare($sql);
+        $statement->execute(['id' => $id]);
+
+        return $statement->rowCount() === 1;
+    }
+
+    /**
+     * Refuse une réservation en attente.
+     */
+    public function rejectById(int $id): bool
+    {
+        $sql = "
+        UPDATE reservations
+        SET status = 'rejected'
+        WHERE id = :id
+          AND status = 'pending'
+    ";
+
+        $statement = $this->db->prepare($sql);
+        $statement->execute(['id' => $id]);
+
+        return $statement->rowCount() === 1;
     }
 }

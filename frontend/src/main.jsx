@@ -16,6 +16,8 @@ import "./styles/pages/reservation.css"
 import "./styles/pages/register.css"
 import "./styles/pages/login.css"
 import "./styles/pages/account.css"
+import "./styles/pages/admin.css"
+import "./styles/pages/admin-reservations.css"
 
 import { AuthProvider } from "./context/AuthContext"
 import App from "./App.jsx"

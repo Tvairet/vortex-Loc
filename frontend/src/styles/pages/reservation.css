@@ -258,3 +258,29 @@
     font-size: 25px;
   }
 }
+
+.reservation-field input[type="text"] {
+  width: 100%;
+  padding: 15px;
+  background: #18191b;
+  color: #fff;
+  border: 1px solid #353638;
+  outline: none;
+  font: inherit;
+}
+
+.reservation-field input[type="text"]:focus {
+  border-color: #c6ff2e;
+}
+
+.reservation-error {
+  margin-top: 20px;
+  color: #ff7676;
+  font-size: 14px;
+}
+
+.reservation-info {
+  margin-top: 20px;
+  color: #a5a6a9;
+  font-size: 14px;
+}

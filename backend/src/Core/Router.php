@@ -16,6 +16,12 @@ class Router
         $this->add('POST', $path, $handler);
     }
 
+    public function patch(string $path, callable $handler): void
+    {
+        $this->add('PATCH', $path, $handler);
+    }
+
+
     public function dispatch(string $method, string $uri): void
     {
         $path = $this->pathFromUri($uri);
@@ -47,16 +53,16 @@ class Router
 
     private function pathFromUri(string $uri): string
     {
-    $path = parse_url($uri, PHP_URL_PATH) ?: '/';
+        $path = parse_url($uri, PHP_URL_PATH) ?: '/';
 
-    // Retire le chemin physique de l'API
-    $basePath = '/vortex-loc/backend/public';
+        // Retire le chemin physique de l'API
+        $basePath = '/vortex-loc/backend/public';
 
-    if (str_starts_with($path, $basePath . '/')) {
-        $path = substr($path, strlen($basePath));
-    }
+        if (str_starts_with($path, $basePath . '/')) {
+            $path = substr($path, strlen($basePath));
+        }
 
-    return $this->normalize($path);
+        return $this->normalize($path);
     }
 
     private function normalize(string $path): string

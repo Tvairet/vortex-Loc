@@ -16,52 +16,93 @@ class User
 
     /**
      * Recherche un utilisateur par son email.
+     *
+     * Inclut le mot de passe haché pour permettre
+     * la vérification lors de la connexion.
+     * Ne jamais retourner ce résultat directement à React.
      */
     public function findByEmail(string $email): ?array
     {
-        $sql = "
+        $statement = $this->db->prepare("
             SELECT *
             FROM users
             WHERE email = :email
             LIMIT 1
-        ";
+        ");
 
-        $statement = $this->db->prepare($sql);
         $statement->execute([
             'email' => $email
         ]);
 
-        $user = $statement->fetch();
-
-        return $user ?: null;
+        return $statement->fetch() ?: null;
     }
 
     /**
-     * Recherche un utilisateur par son ID.
+     * Recherche un utilisateur par son identifiant.
+     * Sans le mot de passe.
      */
     public function findById(int $id): ?array
     {
-        $sql = "
-            SELECT id, first_name, last_name, email,
-                   phone, role, created_at
+        $statement = $this->db->prepare("
+            SELECT
+                id,
+                first_name,
+                last_name,
+                email,
+                phone,
+                role,
+                created_at
             FROM users
             WHERE id = :id
             LIMIT 1
-        ";
+        ");
 
-        $statement = $this->db->prepare($sql);
         $statement->execute([
             'id' => $id
         ]);
 
-        $user = $statement->fetch();
-
-        return $user ?: null;
+        return $statement->fetch() ?: null;
     }
 
     /**
-     * Crée un nouvel utilisateur.
-     * Le mot de passe reçu doit déjà être haché.
+     * Liste les utilisateurs pour l'administration.
+     *
+     * Les mots de passe ne sont jamais récupérés.
+     */
+    public function findAll(): array
+    {
+        $statement = $this->db->query("
+            SELECT
+                id,
+                first_name,
+                last_name,
+                email,
+                phone,
+                role,
+                created_at
+            FROM users
+            ORDER BY created_at DESC, id DESC
+        ");
+
+        return $statement->fetchAll();
+    }
+
+    /**
+     * Compte les utilisateurs enregistrés.
+     */
+    public function countAll(): int
+    {
+        $statement = $this->db->query("
+            SELECT COUNT(*)
+            FROM users
+        ");
+
+        return (int) $statement->fetchColumn();
+    }
+
+    /**
+     * Crée un utilisateur.
+     * Le mot de passe doit être haché au préalable.
      */
     public function create(
         string $firstName,
@@ -70,14 +111,23 @@ class User
         string $passwordHash,
         ?string $phone = null
     ): int {
-        $sql = "
-            INSERT INTO users
-                (first_name, last_name, email, password, phone, role)
-            VALUES
-                (:first_name, :last_name, :email, :password, :phone, 'user')
-        ";
-
-        $statement = $this->db->prepare($sql);
+        $statement = $this->db->prepare("
+            INSERT INTO users (
+                first_name,
+                last_name,
+                email,
+                password,
+                phone,
+                role
+            ) VALUES (
+                :first_name,
+                :last_name,
+                :email,
+                :password,
+                :phone,
+                'user'
+            )
+        ");
 
         $statement->execute([
             'first_name' => $firstName,

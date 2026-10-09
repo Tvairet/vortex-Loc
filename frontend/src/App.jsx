@@ -7,6 +7,10 @@ import Reservation from "./pages/Reservation"
 import Register from "./pages/Register"
 import Login from "./pages/Login"
 import Account from "./pages/Account"
+import AdminDashboard from "./pages/AdminDashboard"
+import AdminReservations from "./pages/AdminReservations"
+import AdminVehicles from "./pages/AdminVehicles"
+import AdminUsers from "./pages/AdminUsers"
 
 function App() {
   return (
@@ -21,6 +25,10 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/compte" element={<Account />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/reservations" element={<AdminReservations />} />
+        <Route path="/admin/vehicles" element={<AdminVehicles />} />
+        <Route path="/admin/users" element={<AdminUsers />} />
 
       </Routes>
 

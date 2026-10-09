@@ -44,6 +44,15 @@ function Header({ theme = "dark" }) {
                 Bonjour {user.first_name}
               </span>
 
+              {user.role === "admin" && (
+                <Link
+                  to="/admin"
+                  className="navbar-admin-link"
+                >
+                  ⚙ Administration
+                </Link>
+              )}
+
               <Link to="/compte" className="navbar-account-link">
                 Mon compte
               </Link>

@@ -1,10 +1,16 @@
+
 import { useEffect, useState } from "react"
-import { useParams, Link } from "react-router-dom"
+import { useParams, Link, useNavigate } from "react-router-dom"
+import { useAuth } from "../context/AuthContext"
 import Header from "../components/header"
 import Footer from "../components/footer"
 
+const API_URL = "http://localhost/vortex-loc/backend/public/api"
+
 function Reservation() {
   const { id } = useParams()
+  const navigate = useNavigate()
+  const { user, loading: authLoading } = useAuth()
 
   const [vehicle, setVehicle] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -12,6 +18,10 @@ function Reservation() {
 
   const [startDate, setStartDate] = useState("")
   const [endDate, setEndDate] = useState("")
+  const [pickupLocation, setPickupLocation] = useState("")
+
+  const [submitting, setSubmitting] = useState(false)
+  const [reservationError, setReservationError] = useState("")
 
   useEffect(() => {
     const controller = new AbortController()
@@ -23,7 +33,7 @@ function Reservation() {
 
       try {
         const response = await fetch(
-          `http://localhost/vortex-loc/backend/public/api/vehicles/${id}`,
+          `${API_URL}/vehicles/${id}`,
           { signal: controller.signal }
         )
 
@@ -41,7 +51,7 @@ function Reservation() {
           setVehicle(data)
         }
       } catch (err) {
-        if (err.name !== "AbortError") {
+        if (err.name !== "AbortError" && !controller.signal.aborted) {
           setError(err.message)
         }
       } finally {
@@ -52,10 +62,11 @@ function Reservation() {
     }
 
     fetchVehicle()
+
     return () => controller.abort()
   }, [id])
 
-  // Calcul du nombre de jours entre deux dates
+  // Calcul du nombre de jours
   function calculateDays(start, end) {
     if (!start || !end) return 0
 
@@ -81,13 +92,77 @@ function Reservation() {
     Date.now() - new Date().getTimezoneOffset() * 60000
   ).toISOString().slice(0, 10)
 
-  function handleSubmit(event) {
+  const canSubmit =
+    !authLoading &&
+    !submitting &&
+    !!vehicle &&
+    numberOfDays >= 1 &&
+    startDate >= today &&
+    pickupLocation.trim().length > 0 &&
+    pickupLocation.trim().length <= 150
+
+  // Envoyer la réservation à PHP
+  async function handleSubmit(event) {
     event.preventDefault()
+    setReservationError("")
 
-    if (!vehicle || numberOfDays < 1) return
+    if (!canSubmit) return
 
-    // La réservation sera enregistrée dans MySQL
-    // lors de la prochaine étape.
+    if (!user) {
+      navigate("/login", {
+        state: {
+          message: "Connectez-vous pour réserver votre véhicule.",
+          from: `/reservation/${id}`
+        }
+      })
+      return
+    }
+
+    setSubmitting(true)
+
+    try {
+      const response = await fetch(`${API_URL}/reservations`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          vehicle_id: Number(id),
+          start_date: startDate,
+          end_date: endDate,
+          pickup_location: pickupLocation.trim()
+        })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error(
+            "Votre session a expiré. Reconnectez-vous avant de réserver."
+          )
+        }
+
+        throw new Error(
+          data.message || "Impossible d'enregistrer votre réservation."
+        )
+      }
+
+      navigate("/compte", {
+        state: {
+          reservationSuccess: true,
+          reservationId: data.reservation?.id
+        }
+      })
+
+    } catch (err) {
+      setReservationError(
+        err.message || "Une erreur est survenue."
+      )
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -143,6 +218,7 @@ function Reservation() {
                     onChange={(event) => {
                       setStartDate(event.target.value)
                       setEndDate("")
+                      setReservationError("")
                     }}
                     required
                   />
@@ -159,9 +235,30 @@ function Reservation() {
                     type="date"
                     min={startDate || today}
                     value={endDate}
-                    onChange={(event) =>
+                    onChange={(event) => {
                       setEndDate(event.target.value)
-                    }
+                      setReservationError("")
+                    }}
+                    required
+                  />
+                </div>
+
+                <div className="reservation-field">
+                  <label htmlFor="pickup-location">
+                    Lieu de retrait
+                  </label>
+
+                  <input
+                    id="pickup-location"
+                    name="pickup_location"
+                    type="text"
+                    placeholder="Ex. Lyon Part-Dieu"
+                    maxLength={150}
+                    value={pickupLocation}
+                    onChange={(event) => {
+                      setPickupLocation(event.target.value)
+                      setReservationError("")
+                    }}
                     required
                   />
                 </div>
@@ -169,18 +266,35 @@ function Reservation() {
               </div>
 
               {startDate && endDate && numberOfDays === 0 && (
-                <p className="reservation-error">
+                <p className="reservation-error" role="alert">
                   La date de retour doit être après
                   la date de départ.
+                </p>
+              )}
+
+              {!authLoading && !user && (
+                <p className="reservation-info">
+                  Vous devrez vous connecter avant
+                  de confirmer votre réservation.
+                </p>
+              )}
+
+              {reservationError && (
+                <p className="reservation-error" role="alert">
+                  {reservationError}
                 </p>
               )}
 
               <button
                 type="submit"
                 className="reservation-submit"
-                disabled={numberOfDays < 1}
+                disabled={!canSubmit}
               >
-                Continuer la réservation →
+                {submitting
+                  ? "Enregistrement en cours..."
+                  : user
+                    ? "Confirmer la réservation →"
+                    : "Se connecter pour réserver →"}
               </button>
             </form>
 
@@ -222,14 +336,17 @@ function Reservation() {
                 <div className="reservation-total">
                   <span>TOTAL ESTIMÉ</span>
                   <strong>
-                    {totalPrice.toLocaleString("fr-FR")} €
+                    {totalPrice.toLocaleString("fr-FR", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2
+                    })} €
                   </strong>
                 </div>
 
                 <p className="reservation-note">
-                  Le tarif est indicatif. La disponibilité
-                  du véhicule sera vérifiée lors
-                  de la confirmation.
+                  Le tarif est indicatif. Le prix définitif
+                  et la disponibilité seront vérifiés
+                  par notre serveur lors de la confirmation.
                 </p>
               </div>
             </aside>
@@ -243,4 +360,5 @@ function Reservation() {
     </div>
   )
 }
+
 export default Reservation
