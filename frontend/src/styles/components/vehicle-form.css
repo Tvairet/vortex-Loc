@@ -1,0 +1,113 @@
+
+/* FORMULAIRE ADMIN - VORTEX'LOC */
+
+.admin-vehicle-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 28px 0;
+  padding: 30px;
+  background: #151619;
+  border: 1px solid #353638;
+  color: #fff;
+}
+
+.admin-vehicle-editor h2,
+.admin-vehicle-editor h3 {
+  margin: 0 0 12px;
+  color: #fff;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.admin-vehicle-editor label {
+  margin-top: 8px;
+  color: #a8a9ad;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.admin-vehicle-editor input,
+.admin-vehicle-editor select,
+.admin-vehicle-editor textarea {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 14px 16px;
+
+  background: #0c0d0f;
+  border: 1px solid #393b3f;
+  border-radius: 0;
+
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.admin-vehicle-editor input::placeholder,
+.admin-vehicle-editor textarea::placeholder {
+  color: #72757a;
+}
+
+.admin-vehicle-editor input:focus,
+.admin-vehicle-editor select:focus,
+.admin-vehicle-editor textarea:focus {
+  border-color: #c6ff2e;
+  box-shadow: 0 0 0 2px rgba(198, 255, 46, 0.12);
+}
+
+.admin-vehicle-editor select {
+  cursor: pointer;
+}
+
+.admin-vehicle-editor select option {
+  background: #151619;
+  color: #fff;
+}
+
+.admin-vehicle-editor textarea {
+  resize: vertical;
+  min-height: 105px;
+}
+
+.admin-vehicle-editor input:disabled,
+.admin-vehicle-editor select:disabled,
+.admin-vehicle-editor textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* BOUTONS DU FORMULAIRE */
+
+.admin-vehicle-editor .admin-reservation-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.admin-vehicle-editor .admin-reservation-actions button {
+  min-height: 44px;
+  padding: 12px 22px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 600px) {
+  .admin-vehicle-editor {
+    padding: 20px;
+  }
+
+  .admin-vehicle-editor .admin-reservation-actions {
+    flex-direction: column;
+  }
+
+  .admin-vehicle-editor .admin-reservation-actions button {
+    width: 100%;
+  }
+}

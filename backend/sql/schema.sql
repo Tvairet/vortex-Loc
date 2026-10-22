@@ -1,0 +1,88 @@
+-- Base VORTEX'LOC
+-- Charset : utf8mb4
+
+CREATE DATABASE IF NOT EXISTS `vortex_loc` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+USE `vortex_loc`;
+
+-- ============================
+-- UTILISATEURS
+-- ============================
+
+CREATE TABLE IF NOT EXISTS `users` (
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `first_name` VARCHAR(100) NOT NULL,
+    `last_name` VARCHAR(100) NOT NULL,
+    `email` VARCHAR(180) NOT NULL,
+    `password` VARCHAR(255) NOT NULL,
+    `phone` VARCHAR(30) DEFAULT NULL,
+    `role` ENUM('user', 'admin') NOT NULL DEFAULT 'user',
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `unique_user_email` (`email`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- ============================
+-- VEHICLES
+-- ============================
+
+CREATE TABLE IF NOT EXISTS `vehicles` (
+    `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `brand` varchar(100) NOT NULL,
+    `model` varchar(100) NOT NULL,
+    `category` varchar(100) NOT NULL,
+    `price_per_day` decimal(10, 2) NOT NULL,
+    `seats` tinyint(3) UNSIGNED NOT NULL,
+    `transmission` varchar(50) NOT NULL,
+    `power` varchar(50) DEFAULT NULL,
+    `range_km` int(10) UNSIGNED DEFAULT NULL,
+    `image` varchar(255) DEFAULT NULL,
+    `description` text DEFAULT NULL,
+    `available` tinyint(1) NOT NULL DEFAULT 1,
+    `vehicle_status` VARCHAR(30) NOT NULL DEFAULT 'available',
+    `status_reason` TEXT NULL,
+    `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- ============================
+-- RESERVATIONS
+-- ============================
+
+CREATE TABLE IF NOT EXISTS `reservations` (
+    `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `user_id` INT UNSIGNED DEFAULT NULL,
+    `vehicle_id` int(10) UNSIGNED NOT NULL,
+    `customer_name` varchar(150) NOT NULL,
+    `customer_email` varchar(180) NOT NULL,
+    `customer_phone` varchar(30) DEFAULT NULL,
+    `pickup_location` varchar(150) NOT NULL,
+    `start_date` date NOT NULL,
+    `end_date` date NOT NULL,
+    `total_price` decimal(10, 2) NOT NULL,
+    `status` varchar(30) NOT NULL DEFAULT 'pending',
+    `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+    PRIMARY KEY (`id`),
+    KEY `idx_reservations_vehicle` (`vehicle_id`),
+    CONSTRAINT `fk_reservations_vehicle` FOREIGN KEY (`vehicle_id`) REFERENCES `vehicles` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+    KEY `idx_reservations_user` (`user_id`),
+    CONSTRAINT `fk_reservations_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- ============================
+-- IMMOBILISATIONS DES VEHICULES
+-- ============================
+
+CREATE TABLE IF NOT EXISTS `vehicle_unavailability` (
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `vehicle_id` INT UNSIGNED NOT NULL,
+    `status` VARCHAR(30) NOT NULL,
+    `reason` TEXT DEFAULT NULL,
+    `start_date` DATE NOT NULL,
+    `estimated_end_date` DATE DEFAULT NULL,
+    `resolved_at` DATETIME DEFAULT NULL,
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_unavailability_vehicle` (`vehicle_id`),
+    CONSTRAINT `fk_unavailability_vehicle` FOREIGN KEY (`vehicle_id`) REFERENCES `vehicles` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;

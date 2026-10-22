@@ -1,0 +1,183 @@
+
+/* =========================
+   PAGE DETAILS VEHICULE
+========================= */
+
+.vehicle-details-page {
+  min-height: 100vh;
+  background: #08090a;
+  color: #f5f5f5;
+}
+
+.vehicle-details {
+  max-width: 1400px;
+  margin: auto;
+  padding: 140px 6% 80px;
+}
+
+/* RETOUR FLOTTE */
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 50px;
+  color: #8c8d91;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.back-link:hover {
+  color: #c6ff2e;
+}
+
+/* GRILLE PRINCIPALE */
+
+.details-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 70px;
+  align-items: center;
+}
+
+/* IMAGE */
+
+.details-image {
+  height: 600px;
+  overflow: hidden;
+  background: #111214;
+}
+
+.details-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* INFORMATIONS */
+
+.details-category {
+  display: inline-block;
+  padding: 8px 12px;
+  background: #c6ff2e;
+  color: #08090a;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.details-brand {
+  margin-top: 30px;
+  color: #8c8d91;
+  font-size: 13px;
+  letter-spacing: 3px;
+  font-weight: 700;
+}
+
+.details-content h1 {
+  margin: 10px 0 25px;
+  font-size: clamp(55px, 6vw, 90px);
+  line-height: 0.9;
+  letter-spacing: -4px;
+}
+
+.details-content h1 strong {
+  color: #c6ff2e;
+}
+
+.details-description {
+  max-width: 500px;
+  color: #9a9b9f;
+  line-height: 1.7;
+}
+
+/* TARIF */
+
+.details-price {
+  margin: 35px 0;
+}
+
+.details-price strong {
+  font-size: 40px;
+}
+
+.details-price span {
+  color: #8c8d91;
+  margin-left: 8px;
+}
+
+/* CARACTERISTIQUES */
+
+.specifications {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  border-top: 1px solid #292a2d;
+  border-bottom: 1px solid #292a2d;
+  margin-bottom: 30px;
+}
+
+.specifications div {
+  padding: 20px 0;
+  border-bottom: 1px solid #292a2d;
+}
+
+.specifications small {
+  display: block;
+  color: #77787c;
+  font-size: 10px;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.specifications strong {
+  font-size: 16px;
+}
+
+/* BOUTON RESERVATION */
+
+.details-reserve {
+  display: block;
+  width: 100%;
+  padding: 18px;
+  border: none;
+  background: #c6ff2e;
+  color: #08090a;
+  font-size: 15px;
+  font-weight: 800;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.details-reserve:hover {
+  transform: translateY(-3px);
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .details-image {
+    height: 400px;
+  }
+}
+
+@media (max-width: 600px) {
+  .vehicle-details {
+    padding: 120px 5% 60px;
+  }
+
+  .details-content h1 {
+    font-size: 48px;
+    letter-spacing: -2px;
+  }
+
+  .details-image {
+    height: 300px;
+  }
+
+  .specifications {
+    gap: 12px;
+  }
+}

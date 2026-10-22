@@ -1,0 +1,280 @@
+
+/* =========================
+   PAGE FLOTTE - THEME CLAIR
+========================= */
+
+.fleet-page {
+  min-height: 100vh;
+  background: #ffffff;
+  color: #08090a;
+}
+
+.fleet-content {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 150px 6% 80px;
+}
+
+/* TITRE */
+
+.fleet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 60px;
+  margin-bottom: 70px;
+}
+
+.fleet-header h1 {
+  margin-top: 25px;
+  font-size: clamp(50px, 6vw, 90px);
+  line-height: 0.95;
+  letter-spacing: -4px;
+}
+
+.fleet-header h1 strong {
+  color: #c6ff2e;
+}
+
+.fleet-header p {
+  max-width: 400px;
+  color: #666666;
+  line-height: 1.7;
+}
+
+.fleet-page .eyebrow {
+  color: #729900;
+}
+
+.fleet-page .eyebrow span {
+  background: #c6ff2e;
+}
+
+/* FILTRES */
+
+.fleet-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 35px;
+}
+
+.fleet-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.filter-button {
+  padding: 12px 18px;
+  border: 1px solid #dedede;
+  border-radius: 6px;
+  background: #f5f5f5;
+  color: #202020;
+  font-size: 13px;
+  font-weight: 700;
+  transition: 0.2s ease;
+}
+
+.filter-button:hover,
+.filter-button.active {
+  background: #c6ff2e;
+  border-color: #c6ff2e;
+  color: #08090a;
+}
+
+.fleet-count {
+  color: #777777;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.fleet-message {
+  padding: 30px 0;
+  color: #555555;
+}
+
+/* GRILLE */
+
+.fleet-page .vehicle-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+}
+
+/* CARTES */
+
+.fleet-page .vehicle-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.04);
+  transition: 0.3s ease;
+}
+
+.fleet-page .vehicle-card:hover {
+  transform: translateY(-5px);
+  border-color: #c6ff2e;
+}
+
+/* IMAGE */
+
+.fleet-page .vehicle-image {
+  position: relative;
+  height: 250px;
+  background: #ebebeb;
+}
+
+.fleet-page .vehicle-image img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.fleet-page .vehicle-category {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  padding: 8px 12px;
+  background: #c6ff2e;
+  color: #08090a;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+/* CONTENU DES CARTES */
+
+.fleet-page .vehicle-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 24px;
+}
+
+.fleet-page .vehicle-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.fleet-page .vehicle-info small {
+  color: #777777;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+.fleet-page .vehicle-info h2 {
+  margin-top: 8px;
+  font-size: 21px;
+  line-height: 1.25;
+}
+
+.fleet-page .vehicle-price {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.fleet-page .vehicle-price strong {
+  font-size: 23px;
+}
+
+.fleet-page .vehicle-price span {
+  display: block;
+  color: #777777;
+  font-size: 12px;
+}
+
+/* CARACTERISTIQUES */
+
+.fleet-page .vehicle-specs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 10px;
+  margin: 24px 0;
+  padding: 20px 0;
+  border-top: 1px solid #eeeeee;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.fleet-page .vehicle-specs span {
+  font-size: 12px;
+  font-weight: 600;
+  color: #626262;
+}
+
+/* BOUTON */
+
+.fleet-page .vehicle-button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin: auto 0 0;
+  padding: 16px 18px;
+  background: #c6ff2e;
+  color: #08090a;
+  border: 1px solid #c6ff2e;
+  border-radius: 5px;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: 0.3s ease;
+}
+
+.fleet-page .vehicle-button:hover {
+  background: #b5ed1c;
+  border-color: #b5ed1c;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1100px) {
+  .fleet-page .vehicle-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .fleet-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 700px) {
+  .fleet-content {
+    padding: 120px 5% 60px;
+  }
+
+  .fleet-page .vehicle-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fleet-page .vehicle-image {
+    height: 230px;
+  }
+
+  .fleet-page .vehicle-info {
+    flex-wrap: wrap;
+  }
+
+  .fleet-header h1 {
+    font-size: 48px;
+    letter-spacing: -2px;
+  }
+
+  .fleet-page .vehicle-card-body {
+    padding: 20px;
+  }
+}
