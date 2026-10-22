@@ -40,7 +40,7 @@ require_once __DIR__ . '/../autoload.php';
 header('Access-Control-Allow-Origin: http://localhost:5173');
 header('Access-Control-Allow-Credentials: true');
 header('Access-Control-Allow-Methods: GET, POST, PATCH, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Headers: Content-Type, X-CSRF-Token');
 header('Vary: Origin');
 
 // Gestion des requêtes OPTIONS
@@ -135,7 +135,7 @@ try {
     $adminMiddleware = new AdminMiddleware($userModel);
 
     $unavailabilityService = new VehicleUnavailabilityService($unavailabilityModel, $vehicleModel);
-    
+
     $statisticsService = new StatisticsService($reservationModel, $vehicleModel, $userModel);
 
     $adminController = new AdminController($adminMiddleware, $reservationService, $vehicleService, $unavailabilityService, $userService, $statisticsService);
@@ -206,28 +206,18 @@ try {
     */
 
     // Inscription
-    $router->post(
-        '/api/auth/register',
-        [$authController, 'register']
-    );
+    $router->post('/api/auth/register', [$authController, 'register']);
 
     // Connexion
-    $router->post(
-        '/api/auth/login',
-        [$authController, 'login']
-    );
+    $router->post('/api/auth/login', [$authController, 'login']);
 
     // Vérifier l'utilisateur connecté
-    $router->get(
-        '/api/auth/me',
-        [$authController, 'me']
-    );
+    $router->get('/api/auth/me', [$authController, 'me']);
 
     // Déconnexion
-    $router->post(
-        '/api/auth/logout',
-        [$authController, 'logout']
-    );
+    $router->post('/api/auth/logout', [$authController, 'logout']);
+
+    $router->get('/api/auth/csrf', [$authController, 'csrf']);
 
     /*
     |--------------------------------------------------------------------------

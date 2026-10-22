@@ -3,6 +3,7 @@
 namespace App\Middleware;
 
 use App\Core\Response;
+use App\Core\Session;
 
 class CsrfMiddleware
 {
@@ -30,6 +31,30 @@ class CsrfMiddleware
             return false;
         }
 
+        if (!$this->hasValidToken()) {
+            Response::json([
+                'message' => 'Jeton CSRF invalide ou manquant.'
+            ], 403);
+
+            return false;
+        }
+
         return true;
+    }
+
+    /**
+     * Vérifie le jeton CSRF associé à la session.
+     */
+    private function hasValidToken(): bool
+    {
+        Session::start();
+
+        $expectedToken = $_SESSION['csrf_token'] ?? null;
+        $receivedToken = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+
+        return is_string($expectedToken)
+            && is_string($receivedToken)
+            && $expectedToken !== ''
+            && hash_equals($expectedToken, $receivedToken);
     }
 }

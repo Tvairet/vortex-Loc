@@ -1,11 +1,9 @@
-
 import { useEffect, useState } from "react"
 import { useParams, Link, useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import Header from "../components/header"
 import Footer from "../components/footer"
-
-const API_URL = "http://localhost/vortex-loc/backend/public/api"
+import { apiFetch } from "../services/apiFetch"
 
 function Reservation() {
   const { id } = useParams()
@@ -32,10 +30,9 @@ function Reservation() {
       setVehicle(null)
 
       try {
-        const response = await fetch(
-          `${API_URL}/vehicles/${id}`,
-          { signal: controller.signal }
-        )
+        const response = await apiFetch(`/vehicles/${id}`, {
+          signal: controller.signal
+        })
 
         if (!response.ok) {
           throw new Error(
@@ -121,12 +118,9 @@ function Reservation() {
     setSubmitting(true)
 
     try {
-      const response = await fetch(`${API_URL}/reservations`, {
+
+      const response = await apiFetch("/reservations", {
         method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json"
-        },
         body: JSON.stringify({
           vehicle_id: Number(id),
           start_date: startDate,

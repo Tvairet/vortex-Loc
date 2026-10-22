@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
-
-const API_URL = "http://localhost/vortex-loc/backend/public/api"
+import { apiFetch } from "../../services/apiFetch"
 
 const LABELS = {
   breakdown: "En panne",
@@ -26,10 +25,12 @@ function VehicleHistory({ vehicleId }) {
     const controller = new AbortController()
     async function fetchHistory() {
       try {
-        const response = await fetch(
-          `${API_URL}/admin/vehicles/${vehicleId}/unavailability`,
-          { credentials: "include", signal: controller.signal }
+
+        const response = await apiFetch(
+          `/admin/vehicles/${vehicleId}/unavailability`,
+          { signal: controller.signal }
         )
+
         const data = await response.json()
         if (!response.ok) throw new Error(data.message || "Historique indisponible.")
         if (!controller.signal.aborted) setHistory(data.unavailability ?? [])

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import Header from "../components/header"
 import Footer from "../components/footer"
+import { apiFetch } from "../services/apiFetch"
 
 function VehicleDetails() {
   const { id } = useParams()
@@ -19,10 +20,9 @@ function VehicleDetails() {
       setVehicle(null)
 
       try {
-        const response = await fetch(
-          `http://localhost/vortex-loc/backend/public/api/vehicles/${id}`,
-          { signal: controller.signal }
-        )
+        const response = await apiFetch(`/vehicles/${id}`, {
+          signal: controller.signal
+        })
 
         if (!response.ok) {
           if (response.status === 404) {
@@ -38,7 +38,7 @@ function VehicleDetails() {
           setVehicle(data)
         }
       } catch (err) {
-        if (err.name !== "AbortError") {
+        if (err.name !== "AbortError" && !controller.signal.aborted) {
           setError(err.message)
         }
       } finally {

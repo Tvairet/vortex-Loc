@@ -1,3 +1,4 @@
+import { apiFetch } from "../services/apiFetch"
 
 import {
     createContext,
@@ -8,18 +9,13 @@ import {
 
 const AuthContext = createContext(null)
 
-const API_URL =
-    "http://localhost/vortex-loc/backend/public/api/auth"
-
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null)
     const [loading, setLoading] = useState(true)
 
     async function refreshUser() {
         try {
-            const response = await fetch(`${API_URL}/me`, {
-                credentials: "include"
-            })
+            const response = await apiFetch("/auth/me")
 
             if (!response.ok) {
                 setUser(null)
@@ -40,9 +36,8 @@ export function AuthProvider({ children }) {
     }, [])
 
     async function logout() {
-        const response = await fetch(`${API_URL}/logout`, {
-            method: "POST",
-            credentials: "include"
+        const response = await apiFetch("/auth/logout", {
+            method: "POST"
         })
 
         if (!response.ok) {

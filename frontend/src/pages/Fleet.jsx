@@ -1,8 +1,8 @@
-
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import Footer from "../components/footer"
 import Header from "../components/header"
+import { apiFetch } from "../services/apiFetch"
 
 const categories = [
   "Tous",
@@ -26,32 +26,34 @@ function Fleet() {
 
     async function fetchVehicles() {
       try {
-        const response = await fetch(
-          "http://localhost/vortex-loc/backend/public/api/vehicles",
-          { signal: controller.signal }
-        )
+        const response = await apiFetch("/vehicles", {
+          signal: controller.signal
+        })
 
         if (!response.ok) {
           throw new Error("Impossible de récupérer les véhicules.")
         }
 
         const data = await response.json()
-        setVehicles(data)
-      } catch (err) {
-        if (err.name !== "AbortError") {
-          setError(err.message)
-        }
-      } finally {
+
         if (!controller.signal.aborted) {
-          setLoading(false)
+          setVehicles(data)
+        }}
+         catch (err) {
+          if (err.name !== "AbortError") {
+            setError(err.message)
+          }
+        } finally {
+          if (!controller.signal.aborted) {
+            setLoading(false)
+          }
         }
       }
-    }
 
     fetchVehicles()
 
-    return () => controller.abort()
-  }, [])
+      return () => controller.abort()
+    }, [])
 
   const filteredVehicles = vehicles.filter(
     (vehicle) =>

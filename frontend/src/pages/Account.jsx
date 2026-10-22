@@ -4,9 +4,7 @@ import { Link, Navigate, useLocation } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import Header from "../components/header"
 import Footer from "../components/footer"
-
-const API_URL =
-    "http://localhost/vortex-loc/backend/public/api"
+import { apiFetch } from "../services/apiFetch"
 
 function Account() {
     const { user, loading } = useAuth()
@@ -45,13 +43,9 @@ function Account() {
             setReservationsError("")
 
             try {
-                const response = await fetch(
-                    `${API_URL}/reservations/me`,
-                    {
-                        credentials: "include",
-                        signal: controller.signal
-                    }
-                )
+                const response = await apiFetch("/reservations/me", {
+                    signal: controller.signal
+                })
 
                 if (!response.ok) {
                     throw new Error(
@@ -105,11 +99,10 @@ function Account() {
         setReservationToCancel(null)
 
         try {
-            const response = await fetch(
-                `${API_URL}/reservations/${reservation.id}/cancel`,
+            const response = await apiFetch(
+                `/reservations/${reservation.id}/cancel`,
                 {
-                    method: "PATCH",
-                    credentials: "include"
+                    method: "PATCH"
                 }
             )
 

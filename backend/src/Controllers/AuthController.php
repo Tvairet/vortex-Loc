@@ -192,4 +192,23 @@ class AuthController
             ], 500);
         }
     }
+
+    /**
+     * GET /api/auth/csrf
+     * Fournit le jeton CSRF associé à la session.
+     */
+    public function csrf(): void
+    {
+        try {
+            Response::json([
+                'csrf_token' => Session::csrfToken()
+            ]);
+        } catch (Throwable $error) {
+            error_log($error->getMessage());
+
+            Response::json([
+                'message' => 'Impossible de générer le jeton CSRF.'
+            ], 500);
+        }
+    }
 }

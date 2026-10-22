@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom"
 import Header from "../components/header"
 import Footer from "../components/footer"
 import { useAuth } from "../context/AuthContext"
+import { apiFetch } from "../services/apiFetch"
 
 function Login() {
     const { refreshUser } = useAuth()
@@ -26,7 +27,6 @@ function Login() {
         }))
     }
 
-
     async function handleSubmit(event) {
         event.preventDefault()
 
@@ -34,20 +34,14 @@ function Login() {
         setLoading(true)
 
         try {
-            const response = await fetch(
-                "http://localhost/vortex-loc/backend/public/api/auth/login",
-                {
-                    method: "POST",
-                    credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        email: form.email,
-                        password: form.password
-                    })
-                }
-            )
+
+            const response = await apiFetch("/auth/login", {
+                method: "POST",
+                body: JSON.stringify({
+                    email: form.email,
+                    password: form.password
+                })
+            })
 
             const data = await response.json()
 

@@ -6,8 +6,7 @@ import Header from "../components/header"
 import Footer from "../components/footer"
 import UserCard from "../components/admin/UserCard"
 import "../styles/pages/admin-users.css"
-
-const API_URL = "http://localhost/vortex-loc/backend/public/api"
+import { apiFetch } from "../services/apiFetch"
 
 function AdminUsers() {
   const { user, loading } = useAuth()
@@ -33,13 +32,9 @@ function AdminUsers() {
       setError("")
 
       try {
-        const response = await fetch(
-          `${API_URL}/admin/users`,
-          {
-            credentials: "include",
-            signal: controller.signal
-          }
-        )
+        const response = await apiFetch("/admin/users", {
+          signal: controller.signal
+        })
 
         const data = await response.json()
 

@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import Header from "../components/header"
 import Footer from "../components/footer"
+import { apiFetch } from "../services/apiFetch"
 
 function Register() {
   const navigate = useNavigate()
@@ -46,22 +47,16 @@ function Register() {
     setLoading(true)
 
     try {
-      const response = await fetch(
-        "http://localhost/vortex-loc/backend/public/api/auth/register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            first_name: form.first_name,
-            last_name: form.last_name,
-            email: form.email,
-            phone: form.phone,
-            password: form.password
-          })
-        }
-      )
+      const response = await apiFetch("/auth/register", {
+        method: "POST",
+        body: JSON.stringify({
+          first_name: form.first_name,
+          last_name: form.last_name,
+          email: form.email,
+          phone: form.phone,
+          password: form.password
+        })
+      })
 
       const data = await response.json()
 

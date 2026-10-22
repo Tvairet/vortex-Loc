@@ -5,9 +5,7 @@ import { Link, Navigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import Header from "../components/header"
 import Footer from "../components/footer"
-
-const API_URL =
-    "http://localhost/vortex-loc/backend/public/api"
+import { apiFetch } from "../services/apiFetch"
 
 function AdminReservations() {
     const { user, loading } = useAuth()
@@ -44,13 +42,9 @@ function AdminReservations() {
             setError("")
 
             try {
-                const response = await fetch(
-                    `${API_URL}/admin/reservations`,
-                    {
-                        credentials: "include",
-                        signal: controller.signal
-                    }
-                )
+                const response = await apiFetch("/admin/reservations", {
+                    signal: controller.signal
+                })
 
                 if (!response.ok) {
                     throw new Error(
@@ -124,25 +118,15 @@ function AdminReservations() {
     ==========================================
     */
 
-    
-function openActionModal(reservation, action) {
-  console.log("Ouverture modale :", {
-    reservation,
-    action,
-    status: reservation.status,
-    updating
-  })
+    function openActionModal(reservation, action) {
+        if (updating || reservation.status !== "pending") {
+            return
+        }
 
-  if (updating || reservation.status !== "pending") {
-    console.warn("Ouverture bloquée")
-    return
-  }
-
-  setActionError("")
-  setActionSuccess("")
-  setReservationToUpdate({ reservation, action })
-}
-
+        setActionError("")
+        setActionSuccess("")
+        setReservationToUpdate({ reservation, action })
+    }
 
     function closeActionModal() {
         if (updating) return
@@ -167,11 +151,10 @@ function openActionModal(reservation, action) {
         setActionSuccess("")
 
         try {
-            const response = await fetch(
-                `${API_URL}/admin/reservations/${reservation.id}/${action}`,
+            const response = await apiFetch(
+                `/admin/reservations/${reservation.id}/${action}`,
                 {
-                    method: "PATCH",
-                    credentials: "include"
+                    method: "PATCH"
                 }
             )
 

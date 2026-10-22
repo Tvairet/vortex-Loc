@@ -5,9 +5,8 @@ import { useAuth } from "../context/AuthContext"
 import Header from "../components/header"
 import Footer from "../components/footer"
 import StatCard from "../components/admin/StatCard"
+import { apiFetch } from "../services/apiFetch"
 import "../styles/pages/admin-stats.css"
-
-const API_URL = "http://localhost/vortex-loc/backend/public/api"
 
 const formatNumber = (value) =>
   Number(value ?? 0).toLocaleString("fr-FR")
@@ -40,13 +39,9 @@ function AdminStats() {
       setError("")
 
       try {
-        const response = await fetch(
-          `${API_URL}/admin/stats`,
-          {
-            credentials: "include",
-            signal: controller.signal
-          }
-        )
+        const response = await apiFetch("/admin/stats", {
+          signal: controller.signal
+        })
 
         const data = await response.json()
 

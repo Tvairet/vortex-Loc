@@ -6,8 +6,7 @@ import Header from "../components/header"
 import Footer from "../components/footer"
 import VehicleForm from "../components/admin/VehicleForm"
 import VehicleCard from "../components/admin/VehicleCard"
-
-const API_URL = "http://localhost/vortex-loc/backend/public/api"
+import { apiFetch } from "../services/apiFetch"
 
 const EMPTY_VEHICLE = {
   brand: "",
@@ -23,16 +22,7 @@ const EMPTY_VEHICLE = {
 }
 
 async function apiRequest(path, options = {}) {
-  const response = await fetch(`${API_URL}${path}`, {
-    credentials: "include",
-    ...options,
-    headers: {
-      ...(options.body
-        ? { "Content-Type": "application/json" }
-        : {}),
-      ...options.headers
-    }
-  })
+  const response = await apiFetch(path, options)
 
   const data = await response.json()
 

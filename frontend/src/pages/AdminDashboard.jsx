@@ -6,9 +6,7 @@ import { useAuth } from "../context/AuthContext"
 import Header from "../components/header"
 import Footer from "../components/footer"
 import AdminCard from "../components/admin/AdminCard"
-
-const API_URL =
-  "http://localhost/vortex-loc/backend/public/api"
+import { apiFetch } from "../services/apiFetch"
 
 const ADMIN_SECTIONS = [
   {
@@ -64,13 +62,9 @@ function AdminDashboard() {
       setError("")
 
       try {
-        const response = await fetch(
-          `${API_URL}/admin/dashboard`,
-          {
-            credentials: "include",
-            signal: controller.signal
-          }
-        )
+        const response = await apiFetch("/admin/dashboard", {
+          signal: controller.signal
+        })
 
         if (!response.ok) {
           throw new Error(
