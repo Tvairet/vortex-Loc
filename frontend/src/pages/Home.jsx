@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom"
 import Header from "../components/header"
 import Footer from "../components/footer"
 import Hero from "../components/hero"
@@ -29,9 +30,9 @@ function Home() {
           <span>Tous⌄</span>
         </div>
 
-        <button className="search-button">
-          🔍 Rechercher
-        </button>
+        <Link className="search-button" to="/flotte">
+          Voir les véhicules →
+        </Link>
 
       </section>
 

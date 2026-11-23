@@ -111,3 +111,40 @@
     width: 100%;
   }
 }
+
+/* LOT 11 — Saisie des véhicules et immobilisations sur mobile */
+.admin-vehicle-editor {
+  min-width: 0;
+  max-width: 100%;
+}
+
+@media (max-width: 600px) {
+  .admin-vehicle-editor {
+    margin: 18px 0;
+    padding: 18px;
+    gap: 12px;
+  }
+
+  .admin-vehicle-editor h2,
+  .admin-vehicle-editor h3 {
+    font-size: clamp(19px, 5.5vw, 23px);
+    overflow-wrap: anywhere;
+  }
+
+  .admin-vehicle-editor input,
+  .admin-vehicle-editor select,
+  .admin-vehicle-editor textarea {
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  .admin-vehicle-editor .admin-reservation-actions {
+    margin-top: 12px;
+  }
+}
+
+@media (max-width: 360px) {
+  .admin-vehicle-editor {
+    padding: 14px;
+  }
+}

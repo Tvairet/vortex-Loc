@@ -9,6 +9,7 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use RuntimeException;
 use App\Models\VehicleUnavailability;
+use App\Models\RentalOption;
 
 class ReservationService
 {
@@ -17,7 +18,9 @@ class ReservationService
         private Reservation $reservationModel,
         private Vehicle $vehicleModel,
         private User $userModel,
-        private VehicleUnavailability $unavailabilityModel
+        private VehicleUnavailability $unavailabilityModel,
+        private RentalOption $rentalOptionModel,
+        private RentalOptionService $rentalOptionService
     ) {}
 
     /**
@@ -75,6 +78,7 @@ class ReservationService
         }
 
         $numberOfDays = (int) $startDate->diff($endDate)->days;
+        $includedKm = $numberOfDays * RentalPolicy::INCLUDED_KM_PER_DAY;
 
         // Vérifier le lieu de retrait
         $pickupLocation = trim(
@@ -90,34 +94,22 @@ class ReservationService
             );
         }
 
-        // Le prix est calculé depuis MySQL, pas depuis React
-        $totalPrice = round(
-            $numberOfDays * (float) $vehicle['price_per_day'],
-            2
-        );
+        // Les montants, y compris les options, seront calcules en transaction
+        // avec les tarifs MySQL les plus recents (ne jamais accepter un prix client).
+        $requestedOptions = $data['options'] ?? [];
 
-        // Construire les informations de réservation
-        $reservationData = [
-            'user_id' => $userId,
-            'vehicle_id' => $vehicleId,
-            'customer_name' => trim(
-                $user['first_name'] . ' ' . $user['last_name']
-            ),
-            'customer_email' => $user['email'],
-            'customer_phone' => $user['phone'],
-            'pickup_location' => $pickupLocation,
-            'start_date' => $startDate->format('Y-m-d'),
-            'end_date' => $endDate->format('Y-m-d'),
-            'total_price' => number_format($totalPrice, 2, '.', '')
-        ];
-
-        $reservationId = $this->reservationModel->withVehicleLock(
+        $saved = $this->reservationModel->withVehicleLock(
             $vehicleId,
             function () use (
                 $vehicleId,
                 $startDate,
                 $endDate,
-                $reservationData
+                $numberOfDays,
+                $includedKm,
+                $pickupLocation,
+                $userId,
+                $user,
+                $requestedOptions
             ) {
 
                 // Vérifier l'état actuel du véhicule sous verrou
@@ -173,18 +165,59 @@ class ReservationService
                     );
                 }
 
-                // Enregistrer la réservation
-                return $this->reservationModel->create($reservationData);
+                $pricedOptions = $this->rentalOptionService->priceSelection(
+                    $requestedOptions,
+                    $lockedVehicle,
+                    $numberOfDays
+                );
+
+                $vehicleCents = (int) round((float) $lockedVehicle['price_per_day'] * 100);
+                $vehicleSubtotalCents = $vehicleCents * $numberOfDays;
+                $optionSubtotalCents = array_sum(array_column($pricedOptions, 'line_total_cents'));
+                $totalCents = $vehicleSubtotalCents + $optionSubtotalCents;
+
+                $reservationData = [
+                    'user_id' => $userId,
+                    'vehicle_id' => $vehicleId,
+                    'customer_name' => trim($user['first_name'] . ' ' . $user['last_name']),
+                    'customer_email' => $user['email'],
+                    'customer_phone' => $user['phone'],
+                    'pickup_location' => $pickupLocation,
+                    'start_date' => $startDate->format('Y-m-d'),
+                    'end_date' => $endDate->format('Y-m-d'),
+                    'total_price' => number_format($totalCents / 100, 2, '.', ''),
+                    'included_km' => $includedKm,
+                    'extra_km_rate' => RentalPolicy::EXTRA_KM_RATE
+                ];
+
+                $reservationId = $this->reservationModel->create($reservationData);
+                $this->rentalOptionModel->saveForReservation($reservationId, $pricedOptions);
+
+                return [
+                    'id' => $reservationId,
+                    'total_price' => $totalCents / 100,
+                    'vehicle_subtotal' => $vehicleSubtotalCents / 100,
+                    'options_subtotal' => $optionSubtotalCents / 100,
+                    'options' => array_map(static function (array $option): array {
+                        unset($option['line_total_cents'], $option['option_id']);
+                        return $option;
+                    }, $pricedOptions)
+                ];
             }
         );
 
         return [
-            'id' => $reservationId,
+            'id' => $saved['id'],
             'vehicle_id' => $vehicleId,
-            'start_date' => $reservationData['start_date'],
-            'end_date' => $reservationData['end_date'],
+            'start_date' => $startDate->format('Y-m-d'),
+            'end_date' => $endDate->format('Y-m-d'),
             'number_of_days' => $numberOfDays,
-            'total_price' => $totalPrice,
+            'included_km' => $includedKm,
+            'extra_km_rate' => (float) RentalPolicy::EXTRA_KM_RATE,
+            'vehicle_subtotal' => $saved['vehicle_subtotal'],
+            'options_subtotal' => $saved['options_subtotal'],
+            'options' => $saved['options'],
+            'total_price' => $saved['total_price'],
             'status' => 'pending'
         ];
     }
@@ -200,7 +233,9 @@ class ReservationService
             );
         }
 
-        return $this->reservationModel->findByUserId($userId);
+        return $this->rentalOptionModel->attachToReservations(
+            $this->reservationModel->findByUserId($userId)
+        );
     }
 
     /**
@@ -318,7 +353,9 @@ class ReservationService
      */
     public function getAllReservationsForAdmin(): array
     {
-        return $this->reservationModel->findAllForAdmin();
+        return $this->rentalOptionModel->attachToReservations(
+            $this->reservationModel->findAllForAdmin()
+        );
     }
 
 

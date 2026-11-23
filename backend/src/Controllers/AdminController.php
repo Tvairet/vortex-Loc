@@ -173,7 +173,8 @@ class AdminController
     /** POST /api/admin/vehicles/{id}/unavailability */
     public function createVehicleUnavailability(string $id): void
     {
-        if (!$this->adminMiddleware->handle()) {
+
+        if (!$this->adminMiddleware->handle() || !$this->validId($id)) {
             return;
         }
 
@@ -211,12 +212,14 @@ class AdminController
     /** PATCH /api/admin/vehicles/{id}/restore */
     public function restoreVehicle(string $id): void
     {
-        if (!$this->adminMiddleware->handle()) {
+        if (!$this->adminMiddleware->handle() || !$this->validId($id)) {
             return;
         }
 
         try {
-            Response::json($this->unavailabilityService->resolveUnavailability((int) $id));
+            Response::json(
+                $this->unavailabilityService->resolveUnavailability((int) $id)
+            );
         } catch (InvalidArgumentException $error) {
             Response::json(['message' => $error->getMessage()], 409);
         } catch (\Throwable $error) {

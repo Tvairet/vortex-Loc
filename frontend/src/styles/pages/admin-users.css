@@ -71,3 +71,23 @@
     gap: 18px;
   }
 }
+
+/* LOT 11 — Recherche et filtres utilisateurs sur petit écran */
+.admin-users-filters {
+  min-width: 0;
+}
+
+@media (max-width: 600px) {
+  .admin-users-filters {
+    margin: 22px 0 20px;
+    padding: 17px;
+    gap: 16px;
+  }
+
+  .admin-users-filters input,
+  .admin-users-filters select {
+    min-width: 0;
+    min-height: 46px;
+    font-size: 16px; /* évite le zoom auto sur iPhone */
+  }
+}

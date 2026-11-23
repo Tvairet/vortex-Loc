@@ -12,6 +12,7 @@ const EMPTY_VEHICLE = {
   brand: "",
   model: "",
   category: "",
+  motorization: "",
   price_per_day: "",
   seats: "",
   transmission: "",
@@ -42,6 +43,10 @@ function AdminVehicles() {
   const [fetching, setFetching] = useState(true)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
+  const [affectedReservations, setAffectedReservations] = useState({
+    vehicleId: null,
+    items: []
+  })
 
   // Actions : immobilisation et remise en service
   const [busyId, setBusyId] = useState(null)
@@ -119,6 +124,7 @@ function AdminVehicles() {
       brand: vehicle.brand ?? "",
       model: vehicle.model ?? "",
       category: vehicle.category ?? "",
+      motorization: vehicle.motorization ?? "",
       price_per_day: String(vehicle.price_per_day ?? ""),
       seats: String(vehicle.seats ?? ""),
       transmission: vehicle.transmission ?? "",
@@ -204,13 +210,22 @@ function AdminVehicles() {
     setSuccess("")
 
     try {
-      await apiRequest(
+      const data = await apiRequest(
         `/admin/vehicles/${vehicleId}/unavailability`,
         {
           method: "POST",
           body: JSON.stringify(payload)
         }
       )
+
+      setAffectedReservations({
+        vehicleId,
+        items: Array.isArray(
+          data.unavailability?.affected_reservations
+        )
+          ? data.unavailability.affected_reservations
+          : []
+      })
 
       await refreshVehicles()
 
@@ -326,6 +341,38 @@ function AdminVehicles() {
           <p className="admin-action-success" role="status">
             ✓ {success}
           </p>
+        )}
+
+        {affectedReservations.items.length > 0 && (
+          <section className="admin-error" role="alert">
+            <h2>
+              Attention : {affectedReservations.items.length} réservation(s)
+              concernée(s)
+            </h2>
+
+            <p>
+              Le véhicule #{affectedReservations.vehicleId} possède
+              des réservations pendant son immobilisation.
+              Elles doivent être examinées par l'administrateur.
+            </p>
+
+            <ul>
+              {affectedReservations.items.map((reservation) => (
+                <li key={reservation.id}>
+                  Réservation #{reservation.id} — {reservation.customer_name}
+                  {" | "}Du {reservation.start_date} au {reservation.end_date}
+                  {" | "}
+                  {reservation.status === "confirmed"
+                    ? "Confirmée"
+                    : "En attente"}
+                </li>
+              ))}
+            </ul>
+            <p>
+              Aucune réservation n'a été automatiquement
+              annulée ou modifiée.
+            </p>
+          </section>
         )}
 
         {fetching && (

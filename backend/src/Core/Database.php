@@ -4,6 +4,7 @@ namespace App\Core;
 
 use PDO;
 use PDOException;
+use RuntimeException;
 
 class Database
 {
@@ -12,8 +13,9 @@ class Database
     public function __construct(array $config)
     {
         $dsn = sprintf(
-            'mysql:host=%s;dbname=%s;charset=%s',
+            'mysql:host=%s;port=%s;dbname=%s;charset=%s',
             $config['host'],
+            $config['port'] ?? '3306',
             $config['dbname'],
             $config['charset']
         );
@@ -26,10 +28,14 @@ class Database
                 [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_EMULATE_PREPARES => false,
                 ]
             );
-        } catch (PDOException $e) {
-            die('Erreur de connexion à la base de données : ' . $e->getMessage());
+        } catch (PDOException $error) {
+            // Garder les détails techniques dans les journaux du serveur,
+            // jamais dans le JSON envoyé au navigateur.
+            error_log('Echec de connexion MySQL : ' . $error->getMessage());
+            throw new RuntimeException('Base de données indisponible.', 0, $error);
         }
     }
 

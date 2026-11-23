@@ -6,6 +6,7 @@ use App\Models\Vehicle;
 use App\Models\VehicleUnavailability;
 use DateTimeImmutable;
 use InvalidArgumentException;
+use App\Models\Reservation;
 
 class VehicleUnavailabilityService
 {
@@ -20,7 +21,8 @@ class VehicleUnavailabilityService
 
     public function __construct(
         private VehicleUnavailability $unavailabilityModel,
-        private Vehicle $vehicleModel
+        private Vehicle $vehicleModel,
+        private Reservation $reservationModel
     ) {}
 
     /**
@@ -91,7 +93,7 @@ class VehicleUnavailabilityService
 
 
         // Verrouiller le véhicule pendant l'opération
-        $id = $this->unavailabilityModel->withVehicleLock(
+        $result = $this->unavailabilityModel->withVehicleLock(
             $vehicleId,
             function () use (
                 $vehicleId,
@@ -132,18 +134,27 @@ class VehicleUnavailabilityService
                     );
                 }
 
-                return $id;
+                return [
+                    'id' => $id,
+                    'affected_reservations' => $this->reservationModel
+                        ->findAffectedByUnavailability(
+                            $vehicleId,
+                            $startDate,
+                            $estimatedEndDate
+                        )
+                ];
             }
         );
 
         return [
-            'id' => $id,
+            'id' => $result['id'],
             'vehicle_id' => $vehicleId,
             'status' => $status,
             'reason' => $reason,
             'start_date' => $startDate,
             'estimated_end_date' => $estimatedEndDate,
-            'resolved_at' => null
+            'resolved_at' => null,
+            'affected_reservations' => $result['affected_reservations']
         ];
     }
 

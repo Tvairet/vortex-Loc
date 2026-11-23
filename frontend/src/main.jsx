@@ -10,6 +10,7 @@ import "./styles/components/footer.css"
 
 // Styles des pages
 import "./styles/pages/home.css"
+import "./styles/pages/information.css"
 import "./styles/pages/fleet.css"
 import "./styles/pages/vehicle-details.css"
 import "./styles/pages/reservation.css"

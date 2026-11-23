@@ -114,7 +114,7 @@ class VehicleUnavailability
     }
 
     /**
-     * Vérifie si une période demandée chevauche
+     * Vérifie si une réservation chevauche
      * une immobilisation non clôturée.
      *
      * La date de retour est exclusive.
@@ -130,15 +130,13 @@ class VehicleUnavailability
         FROM vehicle_unavailability
         WHERE vehicle_id = :vehicle_id
           AND resolved_at IS NULL
+          AND start_date < :end_date
           AND (
               estimated_end_date IS NULL
-              OR (
-                  start_date < :end_date
-                  AND DATE_ADD(
-                      estimated_end_date,
-                      INTERVAL 1 DAY
-                  ) > :start_date
-              )
+              OR DATE_ADD(
+                  estimated_end_date,
+                  INTERVAL 1 DAY
+              ) > :start_date
           )
     ";
 

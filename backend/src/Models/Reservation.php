@@ -128,6 +128,8 @@ class Reservation
                 start_date,
                 end_date,
                 total_price,
+                included_km,
+                extra_km_rate,
                 status
             ) VALUES (
                 :user_id,
@@ -139,6 +141,8 @@ class Reservation
                 :start_date,
                 :end_date,
                 :total_price,
+                :included_km,
+                :extra_km_rate,
                 'pending'
             )
         ";
@@ -154,7 +158,9 @@ class Reservation
             'pickup_location' => $data['pickup_location'],
             'start_date' => $data['start_date'],
             'end_date' => $data['end_date'],
-            'total_price' => $data['total_price']
+            'total_price' => $data['total_price'],
+            'included_km' => $data['included_km'],
+            'extra_km_rate' => $data['extra_km_rate']
         ]);
 
         return (int) $this->db->lastInsertId();
@@ -173,6 +179,10 @@ class Reservation
                 r.start_date,
                 r.end_date,
                 r.total_price,
+                r.included_km,
+                r.extra_km_rate,
+                r.extra_km,
+                r.extra_km_amount,
                 r.status,
                 r.pickup_location,
                 r.created_at,
@@ -269,6 +279,10 @@ class Reservation
             r.start_date,
             r.end_date,
             r.total_price,
+            r.included_km,
+            r.extra_km_rate,
+            r.extra_km,
+            r.extra_km_amount,
             r.status,
             r.created_at,
             v.brand,
@@ -355,4 +369,53 @@ class Reservation
 
         return (float) $statement->fetchColumn();
     }
+    
+/**
+ * Recherche les réservations concernées par
+ * une période d'immobilisation.
+ *
+ * La date de retour est exclusive.
+ * La fin prévisionnelle est incluse.
+ */
+public function findAffectedByUnavailability(
+    int $vehicleId,
+    string $startDate,
+    ?string $estimatedEndDate
+): array {
+    $sql = "
+        SELECT
+            id,
+            vehicle_id,
+            customer_name,
+            start_date,
+            end_date,
+            status
+        FROM reservations
+        WHERE vehicle_id = :vehicle_id
+          AND status IN ('pending', 'confirmed')
+          AND end_date > :start_date
+    ";
+
+    $params = [
+        'vehicle_id' => $vehicleId,
+        'start_date' => $startDate
+    ];
+
+    // Une immobilisation sans fin prévue
+    // concerne toutes les réservations ultérieures.
+    if ($estimatedEndDate !== null) {
+        $sql .= "
+            AND start_date <= :estimated_end_date
+        ";
+
+        $params['estimated_end_date'] = $estimatedEndDate;
+    }
+
+    $sql .= " ORDER BY start_date ASC, id ASC";
+
+    $statement = $this->db->prepare($sql);
+    $statement->execute($params);
+
+    return $statement->fetchAll(PDO::FETCH_ASSOC);
+}
 }

@@ -12,6 +12,13 @@ import AdminReservations from "./pages/AdminReservations"
 import AdminVehicles from "./pages/AdminVehicles"
 import AdminUsers from "./pages/AdminUsers"
 import AdminStats from "./pages/AdminStats"
+import Services from "./pages/Services"
+import Avis from "./pages/Avis"
+import Contact from "./pages/Contact"
+import NotFound from "./pages/NotFound"
+import MentionsLegales from "./pages/MentionsLegales"
+import Confidentialite from "./pages/Confidentialite"
+import ConditionsLocation from "./pages/ConditionsLocation"
 
 function App() {
   return (
@@ -21,6 +28,12 @@ function App() {
 
         <Route path="/" element={<Home />} />
         <Route path="/flotte" element={<Fleet />} />
+        <Route path="/services" element={<Services />} />
+        <Route path="/avis" element={<Avis />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/mentions-legales" element={<MentionsLegales />} />
+        <Route path="/confidentialite" element={<Confidentialite />} />
+        <Route path="/conditions-location" element={<ConditionsLocation />} />
         <Route path="/vehicule/:id" element={<VehicleDetails />} />
         <Route path="/reservation/:id" element={<Reservation />} />
         <Route path="/register" element={<Register />} />
@@ -31,6 +44,7 @@ function App() {
         <Route path="/admin/vehicles" element={<AdminVehicles />} />
         <Route path="/admin/users" element={<AdminUsers />} />
         <Route path="/admin/stats" element={<AdminStats />} />
+        <Route path="*" element={<NotFound />} />
 
       </Routes>
 

@@ -98,3 +98,36 @@
     font-size: 23px;
   }
 }
+
+/* LOT 11 — Statistiques lisibles à toute largeur */
+.admin-stats-grid,
+.admin-stats-section,
+.admin-stat-card {
+  min-width: 0;
+}
+
+@media (max-width: 600px) {
+  .admin-stats-grid {
+    margin: 20px 0;
+  }
+
+  .admin-stat-card {
+    padding: 19px;
+    gap: 14px;
+  }
+
+  .admin-stat-label,
+  .admin-stat-detail {
+    overflow-wrap: anywhere;
+  }
+
+  .admin-stats-section {
+    margin-top: 30px;
+  }
+
+  .admin-stats-section h2 {
+    font-size: clamp(20px, 5.8vw, 24px);
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+  }
+}
