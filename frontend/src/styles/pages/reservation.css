@@ -85,7 +85,8 @@
   text-transform: uppercase;
 }
 
-.reservation-field input {
+.reservation-field input,
+.reservation-field select {
   width: 100%;
   min-width: 0;
   padding: 16px;
@@ -97,7 +98,8 @@
   color-scheme: dark;
 }
 
-.reservation-field input:focus {
+.reservation-field input:focus,
+.reservation-field select:focus {
   outline: none;
   border-color: #c6ff2e;
 }

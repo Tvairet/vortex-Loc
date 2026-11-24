@@ -162,6 +162,7 @@ function Reservation() {
 
   // Le serveur fournit la règle commerciale et enregistre le forfait
   // contractuel au moment de la demande de réservation.
+  const pickupLocations = vehicle?.rental_terms?.pickup_locations ?? []
   const includedKmPerDay = vehicle?.rental_terms?.included_km_per_day
   const extraKmRate = vehicle?.rental_terms?.extra_km_rate
   const includedKm = numberOfDays * (includedKmPerDay ?? 0)
@@ -179,8 +180,7 @@ function Reservation() {
     (!selectedCodes.includes("family_pack") || !!familyVariant) &&
     numberOfDays >= 1 &&
     startDate >= today &&
-    pickupLocation.trim().length > 0 &&
-    pickupLocation.trim().length <= 150
+    pickupLocations.includes(pickupLocation)
 
   // Envoyer la réservation à PHP
   async function handleSubmit(event) {
@@ -209,7 +209,7 @@ function Reservation() {
           vehicle_id: Number(id),
           start_date: startDate,
           end_date: endDate,
-          pickup_location: pickupLocation.trim(),
+          pickup_location: pickupLocation,
           options: selectedOptions.map((option) => ({
             code: option.code,
             ...(option.code === "family_pack" ? { variant: familyVariant } : {})
@@ -330,19 +330,21 @@ function Reservation() {
                     Lieu de retrait
                   </label>
 
-                  <input
+                  <select
                     id="pickup-location"
                     name="pickup_location"
-                    type="text"
-                    placeholder="Ex. Lyon Part-Dieu"
-                    maxLength={150}
                     value={pickupLocation}
                     onChange={(event) => {
                       setPickupLocation(event.target.value)
                       setReservationError("")
                     }}
                     required
-                  />
+                  >
+                    <option value="" disabled>Choisissez votre point de retrait</option>
+                    {pickupLocations.map((location) => (
+                      <option key={location} value={location}>{location}</option>
+                    ))}
+                  </select>
                 </div>
 
               </div>

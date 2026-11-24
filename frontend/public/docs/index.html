@@ -492,7 +492,10 @@
                   },
                   "pickup_location": {
                     "type": "string",
-                    "maxLength": 150
+                    "enum": [
+                      "Gare de Lyon-Part-Dieu",
+                      "Aéroport Lyon-Saint Exupéry"
+                    ]
                   },
                   "options": {
                     "type": "array",
@@ -530,7 +533,7 @@
                 "vehicle_id": 1,
                 "start_date": "2026-12-10",
                 "end_date": "2026-12-13",
-                "pickup_location": "Paris Gare de Lyon",
+                "pickup_location": "Gare de Lyon-Part-Dieu",
                 "options": []
               }
             }
@@ -542,7 +545,7 @@
             "csrf": []
           }
         ],
-        "description": "La demande exige une session client et un jeton CSRF. Le retour doit suivre le départ. Le serveur vérifie la disponibilité puis calcule le montant. Exemple tiré de la réservation de démonstration du dossier."
+        "description": "La demande exige une session client et un jeton CSRF. Le retour doit suivre le départ. Le serveur vérifie la disponibilité puis calcule le montant. Le lieu doit correspondre à un point de retrait proposé."
       }
     },
     "/reservations/me": {

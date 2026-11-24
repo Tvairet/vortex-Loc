@@ -81,16 +81,10 @@ class ReservationService
         $includedKm = $numberOfDays * RentalPolicy::INCLUDED_KM_PER_DAY;
 
         // Vérifier le lieu de retrait
-        $pickupLocation = trim(
-            (string) ($data['pickup_location'] ?? '')
-        );
-
-        if (
-            $pickupLocation === '' ||
-            mb_strlen($pickupLocation) > 150
-        ) {
+        $pickupLocation = $data['pickup_location'] ?? null;
+        if (!in_array($pickupLocation, RentalPolicy::PICKUP_LOCATIONS, true)) {
             throw new InvalidArgumentException(
-                'Veuillez indiquer un lieu de retrait valide.'
+                'Veuillez choisir un point de retrait proposé.'
             );
         }
 

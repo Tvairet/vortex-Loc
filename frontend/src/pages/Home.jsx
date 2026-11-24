@@ -11,8 +11,8 @@ function Home() {
       <section className="search-bar">
 
         <div className="search-field">
-          <small>📍 LIEU DE PRISE EN CHARGE</small>
-          <span>Paris — Gare de Lyon</span>
+          <small>📍 POINTS DE RETRAIT</small>
+          <span>Gare de Lyon-Part-Dieu ou Aéroport Lyon-Saint Exupéry</span>
         </div>
 
         <div className="search-field">
