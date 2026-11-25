@@ -6,7 +6,7 @@ Application de démonstration de location de véhicules réalisée pour le titre
 
 ## Documents pour le jury
 
-- [Dossier de projet (PDF, 45 pages)](frontend/public/docs/dossier.pdf)
+- [Dossier de projet (PDF, 45 pages)](soutenance/VortexLoc_Dossier_Projet_Vairet_Tristan.pdf)
 - [Présentation orale de Vairet Tristan (PowerPoint, 25 diapositives)](soutenance/VortexLoc_Soutenance_Vairet_Tristan.pptx)
 
 ## Découvrir le projet
