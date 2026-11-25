@@ -46,15 +46,39 @@ function VehicleForm({
             />
 
             <label htmlFor="vehicle-category">Catégorie *</label>
-            <input
+            <select
                 id="vehicle-category"
                 name="category"
                 value={vehicle.category}
                 onChange={onChange}
                 required
                 disabled={saving}
-                placeholder="Ex. : Sportive"
-            />
+            >
+                <option value="">Choisir une catégorie</option>
+                {!["Sportive", "Citadine", "Familiale", "SUV", ""].includes(vehicle.category) && (
+                    <option value={vehicle.category} disabled>
+                        Ancienne catégorie : {vehicle.category} (à reclasser)
+                    </option>
+                )}
+                <option value="Sportive">Sportive</option>
+                <option value="Citadine">Citadine</option>
+                <option value="Familiale">Familiale</option>
+                <option value="SUV">SUV</option>
+            </select>
+
+            <label htmlFor="vehicle-motorization">Motorisation *</label>
+            <select
+                id="vehicle-motorization"
+                name="motorization"
+                value={vehicle.motorization}
+                onChange={onChange}
+                required
+                disabled={saving}
+            >
+                <option value="">Choisir une motorisation</option>
+                <option value="electric">100 % électrique</option>
+                <option value="thermal">Thermique</option>
+            </select>
 
             <label htmlFor="vehicle-price">Prix par jour (€) *</label>
             <input

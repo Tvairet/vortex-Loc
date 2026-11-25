@@ -8,15 +8,9 @@ use RuntimeException;
 
 class VehicleService
 {
-    private const ALLOWED_STATUSES = [
-        'available',
-        'breakdown',
-        'cleaning',
-        'maintenance',
-        'repair',
-        'preparation',
-        'out_of_service'
-    ];
+    
+    private const ALLOWED_CATEGORIES = ['Sportive', 'Citadine', 'Familiale', 'SUV'];
+    private const ALLOWED_MOTORIZATIONS = ['electric', 'thermal'];
 
     private const REQUIRED_FIELDS = [
         'brand' => 'La marque',
@@ -112,62 +106,6 @@ class VehicleService
     }
 
     /**
-     * Ancienne gestion directe des statuts.
-     *
-     * À conserver temporairement pour compatibilité,
-     * puis à retirer avec sa route API.
-     * Les immobilisations doivent passer par
-     * VehicleUnavailabilityService.
-     */
-    public function updateVehicleStatus(
-        int $id,
-        string $status,
-        ?string $reason
-    ): array {
-        if ($id <= 0) {
-            throw new InvalidArgumentException(
-                'Identifiant du véhicule invalide.'
-            );
-        }
-
-        if (!in_array($status, self::ALLOWED_STATUSES, true)) {
-            throw new InvalidArgumentException(
-                'État du véhicule invalide.'
-            );
-        }
-
-        $reason = $reason !== null ? trim($reason) : null;
-
-        if ($reason === '') {
-            $reason = null;
-        }
-
-        if ($reason !== null && mb_strlen($reason) > 500) {
-            throw new InvalidArgumentException(
-                'Le commentaire ne doit pas dépasser 500 caractères.'
-            );
-        }
-
-        if ($status === 'available') {
-            $reason = null;
-        }
-
-        $this->findVehicleOrFail($id);
-
-        if (!$this->vehicleModel->updateStatus(
-            $id,
-            $status,
-            $reason
-        )) {
-            throw new RuntimeException(
-                'Impossible de modifier l’état du véhicule.'
-            );
-        }
-
-        return $this->findVehicleOrFail($id);
-    }
-
-    /**
      * Valide les données communes à la création
      * et à la modification.
      */
@@ -191,6 +129,18 @@ class VehicleService
 
             $validated[$field] = trim($value);
         }
+
+        // Catégories et motorisations définies pour la nouvelle flotte.
+        if (!in_array($validated['category'], self::ALLOWED_CATEGORIES, true)) {
+            throw new InvalidArgumentException('Catégorie invalide.');
+        }
+
+        $motorization = $data['motorization'] ?? null;
+        if (!is_string($motorization) ||
+            !in_array($motorization, self::ALLOWED_MOTORIZATIONS, true)) {
+            throw new InvalidArgumentException('Motorisation invalide.');
+        }
+        $validated['motorization'] = $motorization;
 
         // Prix journalier
         $price = $data['price_per_day'] ?? null;
@@ -314,6 +264,7 @@ class VehicleService
             'brand' => $row['brand'],
             'model' => $row['model'],
             'category' => $row['category'],
+            'motorization' => $row['motorization'] ?? null,
             'price_per_day' => (float) $row['price_per_day'],
             'seats' => (int) $row['seats'],
             'transmission' => $row['transmission'],
@@ -325,7 +276,8 @@ class VehicleService
             'description' => $row['description'],
             'available' => (bool) $row['available'],
             'vehicle_status' => $row['vehicle_status'] ?? 'available',
-            'status_reason' => $row['status_reason'] ?? null
+            'status_reason' => $row['status_reason'] ?? null,
+            'rental_terms' => RentalPolicy::publicTerms()
         ];
     }
 }

@@ -5,6 +5,18 @@ import Header from "../components/header"
 import Footer from "../components/footer"
 import { apiFetch } from "../services/apiFetch"
 
+const FAMILY_VARIANTS = [
+  { value: "baby_seat", label: "Siège bébé" },
+  { value: "child_seat", label: "Siège enfant" },
+  { value: "booster_seat", label: "Rehausseur" }
+]
+
+function formatEuro(amount) {
+  return Number(amount).toLocaleString("fr-FR", {
+    style: "currency", currency: "EUR"
+  })
+}
+
 function Reservation() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -21,6 +33,12 @@ function Reservation() {
   const [submitting, setSubmitting] = useState(false)
   const [reservationError, setReservationError] = useState("")
 
+  const [rentalOptions, setRentalOptions] = useState([])
+  const [optionsLoading, setOptionsLoading] = useState(true)
+  const [optionsError, setOptionsError] = useState("")
+  const [selectedCodes, setSelectedCodes] = useState([])
+  const [familyVariant, setFamilyVariant] = useState("")
+
   useEffect(() => {
     const controller = new AbortController()
 
@@ -28,6 +46,8 @@ function Reservation() {
       setLoading(true)
       setError(null)
       setVehicle(null)
+      setSelectedCodes([])
+      setFamilyVariant("")
 
       try {
         const response = await apiFetch(`/vehicles/${id}`, {
@@ -63,6 +83,33 @@ function Reservation() {
     return () => controller.abort()
   }, [id])
 
+  // Les tarifs viennent de l'API, jamais du formulaire ni d'un prix codé en dur.
+  useEffect(() => {
+    const controller = new AbortController()
+
+    async function loadOptions() {
+      try {
+        const response = await apiFetch("/rental-options", {
+          signal: controller.signal
+        })
+        if (!response.ok) throw new Error("Impossible de charger les options.")
+        const data = await response.json()
+        if (!controller.signal.aborted) {
+          setRentalOptions(Array.isArray(data.options) ? data.options : [])
+        }
+      } catch (err) {
+        if (!controller.signal.aborted && err.name !== "AbortError") {
+          setOptionsError(err.message)
+        }
+      } finally {
+        if (!controller.signal.aborted) setOptionsLoading(false)
+      }
+    }
+
+    loadOptions()
+    return () => controller.abort()
+  }, [])
+
   // Calcul du nombre de jours
   function calculateDays(start, end) {
     if (!start || !end) return 0
@@ -81,9 +128,44 @@ function Reservation() {
 
   const numberOfDays = calculateDays(startDate, endDate)
 
-  const totalPrice = vehicle
+  const vehicleSubtotal = vehicle
     ? numberOfDays * Number(vehicle.price_per_day)
     : 0
+
+  const compatibleOptions = rentalOptions.map((option) => {
+    const category = String(vehicle?.category ?? "").toLocaleLowerCase("fr-FR")
+    const compatible = option.code === "family_pack"
+      ? Number(vehicle?.seats) >= 4
+      : option.code === "escape_pack"
+        ? category.includes("suv") || category.includes("famil")
+        : true
+
+    return { ...option, compatible }
+  })
+
+  const selectedOptions = compatibleOptions.filter(
+    (option) => option.compatible && selectedCodes.includes(option.code)
+  )
+  const optionsSubtotal = numberOfDays * selectedOptions.reduce(
+    (sum, option) => sum + Number(option.unit_price), 0
+  )
+  const totalPrice = vehicleSubtotal + optionsSubtotal
+
+  function toggleOption(code) {
+    setSelectedCodes((previous) => previous.includes(code)
+      ? previous.filter((item) => item !== code)
+      : [...previous, code]
+    )
+    if (code === "family_pack") setFamilyVariant("")
+    setReservationError("")
+  }
+
+  // Le serveur fournit la règle commerciale et enregistre le forfait
+  // contractuel au moment de la demande de réservation.
+  const pickupLocations = vehicle?.rental_terms?.pickup_locations ?? []
+  const includedKmPerDay = vehicle?.rental_terms?.included_km_per_day
+  const extraKmRate = vehicle?.rental_terms?.extra_km_rate
+  const includedKm = numberOfDays * (includedKmPerDay ?? 0)
 
   const today = new Date(
     Date.now() - new Date().getTimezoneOffset() * 60000
@@ -92,11 +174,13 @@ function Reservation() {
   const canSubmit =
     !authLoading &&
     !submitting &&
+    !optionsLoading &&
+    !optionsError &&
     !!vehicle &&
+    (!selectedCodes.includes("family_pack") || !!familyVariant) &&
     numberOfDays >= 1 &&
     startDate >= today &&
-    pickupLocation.trim().length > 0 &&
-    pickupLocation.trim().length <= 150
+    pickupLocations.includes(pickupLocation)
 
   // Envoyer la réservation à PHP
   async function handleSubmit(event) {
@@ -125,7 +209,11 @@ function Reservation() {
           vehicle_id: Number(id),
           start_date: startDate,
           end_date: endDate,
-          pickup_location: pickupLocation.trim()
+          pickup_location: pickupLocation,
+          options: selectedOptions.map((option) => ({
+            code: option.code,
+            ...(option.code === "family_pack" ? { variant: familyVariant } : {})
+          }))
         })
       })
 
@@ -242,22 +330,86 @@ function Reservation() {
                     Lieu de retrait
                   </label>
 
-                  <input
+                  <select
                     id="pickup-location"
                     name="pickup_location"
-                    type="text"
-                    placeholder="Ex. Lyon Part-Dieu"
-                    maxLength={150}
                     value={pickupLocation}
                     onChange={(event) => {
                       setPickupLocation(event.target.value)
                       setReservationError("")
                     }}
                     required
-                  />
+                  >
+                    <option value="" disabled>Choisissez votre point de retrait</option>
+                    {pickupLocations.map((location) => (
+                      <option key={location} value={location}>{location}</option>
+                    ))}
+                  </select>
                 </div>
 
               </div>
+
+              <section className="reservation-options-preview" aria-label="Options de location">
+                <h2>Options de location</h2>
+                <p>Choisissez les équipements et services souhaités. Les tarifs
+                  sont calculés par jour de location.</p>
+
+                {optionsLoading && <p>Chargement des options...</p>}
+                {optionsError && (
+                  <p className="reservation-error" role="alert">{optionsError}</p>
+                )}
+
+                {!optionsLoading && !optionsError && compatibleOptions.map((option) => (
+                  <div className="reservation-option" key={option.code}>
+                    <label className="reservation-option-choice">
+                      <input
+                        type="checkbox"
+                        checked={selectedCodes.includes(option.code)}
+                        disabled={!option.compatible || submitting}
+                        onChange={() => toggleOption(option.code)}
+                      />
+                      <span>
+                        <strong>{option.name}</strong>
+                        <small>{option.description}</small>
+                        {!option.compatible && (
+                          <small>Non proposé pour ce véhicule.</small>
+                        )}
+                      </span>
+                      <strong className="reservation-option-price">
+                        {formatEuro(option.unit_price)}/jour
+                      </strong>
+                    </label>
+                    {option.code === "family_pack" && selectedCodes.includes("family_pack") && (
+                      <div className="reservation-field reservation-family-choice">
+                        <label htmlFor="family-variant">Équipement souhaité</label>
+                        <select
+                          id="family-variant"
+                          value={familyVariant}
+                          disabled={submitting}
+                          required
+                          onChange={(event) => {
+                            setFamilyVariant(event.target.value)
+                            setReservationError("")
+                          }}
+                        >
+                          <option value="">Choisir un équipement</option>
+                          {FAMILY_VARIANTS.map((variant) => (
+                            <option value={variant.value} key={variant.value}>
+                              {variant.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                  </div>
+                ))}
+
+                <p className="reservation-options-info">
+                  Conducteur supplémentaire : identité à déclarer au contrat.
+                  Équipements sous réserve de compatibilité et de disponibilité ;
+                  l'agence vérifie la demande avant confirmation.
+                </p>
+              </section>
 
               {startDate && endDate && numberOfDays === 0 && (
                 <p className="reservation-error" role="alert">
@@ -278,6 +430,11 @@ function Reservation() {
                   {reservationError}
                 </p>
               )}
+
+              <p className="legal-form-notice">
+                Cette demande est enregistrée uniquement pour la démonstration : aucune location réelle ni aucun paiement.
+                Voir les <Link to="/conditions-location">conditions de location</Link> et la <Link to="/confidentialite">politique de confidentialité</Link>.
+              </p>
 
               <button
                 type="submit"
@@ -327,6 +484,47 @@ function Reservation() {
                   </strong>
                 </div>
 
+                {includedKmPerDay != null && extraKmRate != null && (
+                  <div className="reservation-mileage" aria-label="Forfait kilométrique">
+                    <h3>Forfait kilométrique</h3>
+                    <div className="reservation-price-row">
+                      <span>Kilomètres inclus</span>
+                      <strong>{includedKm} km ({includedKmPerDay} km/jour)</strong>
+                    </div>
+                    <div className="reservation-price-row">
+                      <span>Au-delà du forfait</span>
+                      <strong>{Number(extraKmRate).toLocaleString("fr-FR", {
+                        style: "currency", currency: "EUR"
+                      })} / km</strong>
+                    </div>
+                    <p className="reservation-km-note">
+                      Le dépassement éventuel sera calculé au retour du véhicule,
+                      selon le kilométrage réellement parcouru. Il n'est pas
+                      compris dans le total estimé ci-dessous.
+                    </p>
+                  </div>
+                )}
+
+                <div className="reservation-price-row">
+                  <span>Location hors options</span>
+                  <strong>{formatEuro(vehicleSubtotal)}</strong>
+                </div>
+
+                {selectedOptions.map((option) => (
+                  <div className="reservation-price-row" key={option.code}>
+                    <span>{option.name} × {numberOfDays} jour(s)
+                      {option.code === "family_pack" && familyVariant &&
+                        ` · ${FAMILY_VARIANTS.find((v) => v.value === familyVariant)?.label}`}
+                    </span>
+                    <strong>{formatEuro(Number(option.unit_price) * numberOfDays)}</strong>
+                  </div>
+                ))}
+
+                <div className="reservation-price-row">
+                  <span>Sous-total options</span>
+                  <strong>{formatEuro(optionsSubtotal)}</strong>
+                </div>
+
                 <div className="reservation-total">
                   <span>TOTAL ESTIMÉ</span>
                   <strong>
@@ -338,9 +536,9 @@ function Reservation() {
                 </div>
 
                 <p className="reservation-note">
-                  Le tarif est indicatif. Le prix définitif
-                  et la disponibilité seront vérifiés
-                  par notre serveur lors de la confirmation.
+                  Le tarif de location et la disponibilité seront vérifiés
+                  par notre serveur à l'enregistrement de la demande.
+                  Les frais kilométriques éventuels sont calculés à la restitution.
                 </p>
               </div>
             </aside>

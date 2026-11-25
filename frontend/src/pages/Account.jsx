@@ -389,6 +389,29 @@ function Account() {
                                                     {reservation.pickup_location}
                                                 </p>
 
+                                                {reservation.included_km != null && (
+                                                    <p>
+                                                        <span>Forfait kilométrique</span>
+                                                        <strong>
+                                                            {Number(reservation.included_km)} km inclus
+                                                            {reservation.extra_km_rate != null &&
+                                                                ` · ${Number(reservation.extra_km_rate).toLocaleString("fr-FR", {
+                                                                    style: "currency", currency: "EUR"
+                                                                })}/km au-delà`}
+                                                        </strong>
+                                                    </p>
+                                                )}
+                                                {Array.isArray(reservation.options) && reservation.options.length > 0 && (
+                                                    <div className="reservation-saved-options">
+                                                        <strong>Options choisies</strong>
+                                                        {reservation.options.map((option) => (
+                                                            <p key={option.code}>
+                                                                <span>{option.name}{option.variant === "baby_seat" ? " · Siège bébé" : option.variant === "child_seat" ? " · Siège enfant" : option.variant === "booster_seat" ? " · Rehausseur" : ""}</span>
+                                                                {Number(option.line_total).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
+                                                            </p>
+                                                        ))}
+                                                    </div>
+                                                )}
                                                 <p>
                                                     <span>Prix total</span>
                                                     <strong>

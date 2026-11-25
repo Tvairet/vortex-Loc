@@ -1,7 +1,13 @@
+
 import { API_URL } from "../config/api"
 
 let csrfToken = null
 let csrfPromise = null
+
+// Oublier le jeton lorsqu'une session change
+export function resetCsrfToken() {
+    csrfToken = null
+}
 
 export async function getCsrfToken() {
     if (csrfToken) {
@@ -61,9 +67,23 @@ export async function apiFetch(endpoint, options = {}) {
         requestHeaders.set("X-CSRF-Token", token)
     }
 
-    return fetch(`${API_URL}${endpoint}`, {
+    const response = await fetch(`${API_URL}${endpoint}`, {
         ...rest,
         credentials: "include",
         headers: requestHeaders
     })
+
+    // Une connexion ou déconnexion peut changer la session PHP.
+    // Le prochain appel protégé récupérera un nouveau jeton.
+    const authEndpoints = [
+        "/auth/login",
+        "/auth/logout",
+        "/auth/register"
+    ]
+
+    if (response.ok && authEndpoints.includes(endpoint.split("?")[0])) {
+        resetCsrfToken()
+    }
+
+    return response
 }

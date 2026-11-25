@@ -366,6 +366,23 @@ function AdminReservations() {
                                                 </strong>
                                             </div>
 
+                                            {reservation.included_km != null && (
+                                                <div>
+                                                    <span>FORFAIT KILOMÉTRIQUE</span>
+                                                    <strong>{Number(reservation.included_km)} km inclus</strong>
+                                                </div>
+                                            )}
+                                            {Array.isArray(reservation.options) && reservation.options.length > 0 && (
+                                                <div>
+                                                    <span>OPTIONS CHOISIES</span>
+                                                    {reservation.options.map((option) => (
+                                                        <p key={option.code}>
+                                                            {option.name}{option.variant === "baby_seat" ? " · Siège bébé" : option.variant === "child_seat" ? " · Siège enfant" : option.variant === "booster_seat" ? " · Rehausseur" : ""}
+                                                            {" — "}{formatPrice(option.line_total)}
+                                                        </p>
+                                                    ))}
+                                                </div>
+                                            )}
                                             <div>
                                                 <span>MONTANT</span>
                                                 <strong>

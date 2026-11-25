@@ -1,0 +1,75 @@
+/* Pages informatives — thème sombre Vortex'Loc, isolé des pages métier. */
+.info-page { background: #08090a; min-height: 100vh; }
+.info-main { width: min(1240px, 90%); margin: 0 auto; padding: 160px 0 68px; min-height: 65vh; }
+.info-intro { max-width: 850px; margin-bottom: 54px; }
+.info-eyebrow { color: #c6ff2e; font-size: 12px; letter-spacing: 0.2em; font-weight: 800; margin-bottom: 20px; }
+.info-intro h1 { font-size: clamp(36px, 5.8vw, 76px); letter-spacing: -0.055em; line-height: 1.03; font-weight: 900; overflow-wrap: anywhere; }
+.info-intro > p:last-child { margin-top: 23px; color: #c6c7c9; max-width: 720px; font-size: clamp(15px, 1.5vw, 18px); line-height: 1.65; }
+.info-section { margin: 30px 0 48px; }
+.info-section-heading { display: flex; justify-content: space-between; align-items: end; gap: 32px; margin-bottom: 24px; }
+.info-section h2, .info-card h2 { font-size: clamp(22px, 2.2vw, 30px); line-height: 1.2; letter-spacing: -0.03em; }
+.info-section-heading p { max-width: 450px; color: #b4b6b9; line-height: 1.6; font-size: 14px; }
+.info-card-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 20px; }
+.info-card { min-width: 0; background: #191b20; border: 1px solid #34363c; padding: clamp(22px, 2.6vw, 36px); border-radius: 10px; }
+.info-card h3 { margin: 18px 0 13px; font-size: 22px; line-height: 1.2; letter-spacing: -0.025em; }
+.info-card p, .info-highlight p, .info-empty-state p { color: #c6c7c9; line-height: 1.65; overflow-wrap: anywhere; }
+.info-card-tag { display: block; color: #c6ff2e; letter-spacing: .13em; font-size: 11px; font-weight: 900; }
+.info-price { display: block; color: #c6ff2e; font-size: 25px; margin-top: 24px; }
+.info-highlight { display: flex; justify-content: space-between; align-items: center; gap: 36px; padding: 38px; border: 1px solid #3b4b21; border-radius: 10px; background: #131913; }
+.info-highlight h2 { margin: 14px 0; }
+.info-highlight p { max-width: 790px; }
+.info-cta { display: inline-flex; align-items: center; justify-content: center; gap: 24px; min-height: 50px; padding: 14px 24px; flex-shrink: 0; border-radius: 5px; background: #c6ff2e; color: #08090a; font-size: 14px; font-weight: 800; text-align: center; cursor: pointer; }
+.info-cta:hover, .info-cta:focus-visible { background: #d5ff63; }
+.info-disclaimer { margin-top: 20px; font-size: 13px; color: #a4a6aa; line-height: 1.6; }
+.info-empty-state { padding: clamp(28px, 5vw, 56px); background: #191b20; border: 1px solid #34363c; border-radius: 10px; }
+.info-empty-state h2 { margin: 14px 0 20px; }
+.info-empty-state p { max-width: 760px; margin-bottom: 28px; }
+.info-actions { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.info-outline-link { min-height: 50px; display: inline-flex; align-items: center; padding: 12px 20px; border: 1px solid #81848a; color: #fff; border-radius: 5px; font-weight: 700; }
+.info-contact-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(260px, 1fr); align-items: start; gap: 24px; }
+.info-contact-aside { display: flex; flex-direction: column; gap: 18px; }
+.info-contact-aside h2 { margin: 0; }
+.info-text-link { color: #c6ff2e; overflow-wrap: anywhere; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.info-form { display: flex; flex-direction: column; gap: 18px; margin-top: 24px; }
+.info-form-row { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; }
+.info-form label { display: flex; flex-direction: column; gap: 8px; color: #ecedef; font-weight: 600; font-size: 14px; }
+.info-form input, .info-form textarea { width: 100%; min-width: 0; min-height: 46px; padding: 12px; color: #fff; background: #101113; border: 1px solid #56585c; border-radius: 5px; font: inherit; }
+.info-form textarea { resize: vertical; }
+.info-form input:focus, .info-form textarea:focus { outline: 2px solid #c6ff2e; outline-offset: 2px; }
+.info-form-note { color: #bbbcc1; font-size: 12px; line-height: 1.6; }
+.info-form .info-cta { align-self: flex-start; }
+.info-notice { padding: 22px; margin-top: 24px; background: #111713; border-left: 3px solid #c6ff2e; }
+.info-notice strong { display: block; margin-bottom: 8px; }
+.info-notice p { font-size: 14px; }
+@media(max-width: 900px) {
+ .info-main { padding-top: 124px; }
+ .info-card-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+ .info-contact-grid { grid-template-columns: 1fr; }
+ .info-section-heading { align-items: flex-start; flex-direction: column; gap: 12px; }
+ .info-highlight { align-items: flex-start; flex-direction: column; }
+}
+@media(max-width: 600px) {
+ .info-main { width: 90%; padding-top: 112px; padding-bottom: 34px; }
+ .info-intro { margin-bottom: 34px; }
+ .info-card-grid, .info-form-row { grid-template-columns: 1fr; }
+ .info-highlight { padding: 25px; }
+ .info-form .info-cta, .info-highlight .info-cta { width: 100%; }
+}
+
+/* Lot 14 : pages juridiques pédagogiques */
+.legal-notice {padding: clamp(20px,3vw,30px); border: 1px solid #4a542d; border-left: 4px solid #c6ff2e; border-radius: 8px; background: #151a13; margin-bottom: 28px; line-height: 1.7;}
+.legal-notice strong {display:block; color: #f3f5ec; margin-bottom: 8px; font-size: clamp(16px,1.8vw,19px);}
+.legal-notice p {color:#d1d4ce; margin:0;}
+.legal-content {max-width: 980px; display: grid; gap: 16px;}
+.legal-panel {padding: clamp(22px,3vw,38px); background: #191b20; border: 1px solid #34363c; border-radius: 9px; min-width: 0;}
+.legal-panel h2 {font-size: clamp(20px,2.4vw,27px); line-height: 1.25; margin-bottom: 18px; color:#fff;}
+.legal-panel p, .legal-panel li {color:#d0d1d5; font-size: 15px; line-height: 1.8; overflow-wrap: anywhere;}
+.legal-panel p + p {margin-top: 13px;}
+.legal-panel ul {margin: 0 0 14px 0; padding-left: 24px;}
+.legal-panel li + li {margin-top: 9px;}
+.legal-panel strong {color:#f6f7f9;}
+.legal-panel a, .legal-form-notice a {color: #c6ff2e; text-decoration: underline; text-underline-offset: 3px;}
+.legal-panel a:hover, .legal-form-notice a:hover {color:#e0ff8b;}
+.legal-panel a:focus-visible, .legal-form-notice a:focus-visible {outline:2px solid #c6ff2e;outline-offset:3px;}
+.legal-form-notice {font-size: 13px; line-height: 1.65; color: #bdbec3; margin: 12px 0 20px; overflow-wrap: anywhere;}
+@media(max-width: 600px) {.legal-panel {padding:22px 18px;} .legal-notice {padding:20px;} .legal-panel p, .legal-panel li {font-size:14px;}}

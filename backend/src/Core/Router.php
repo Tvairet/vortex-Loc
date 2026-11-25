@@ -55,10 +55,13 @@ class Router
     {
         $path = parse_url($uri, PHP_URL_PATH) ?: '/';
 
-        // Retire le chemin physique de l'API
-        $basePath = '/vortex-loc/backend/public';
+        // Préfixe de l'API : XAMPP par défaut, configurable pour l'hébergement.
+        $basePath = rtrim(
+            AppConfig::get('APP_PUBLIC_BASE_PATH', '/vortex-loc/backend/public'),
+            '/'
+        );
 
-        if (str_starts_with($path, $basePath . '/')) {
+        if ($basePath !== '' && str_starts_with($path, $basePath . '/')) {
             $path = substr($path, strlen($basePath));
         }
 

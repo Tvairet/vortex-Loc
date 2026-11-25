@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom"
 import Header from "../components/header"
 import Footer from "../components/footer"
 import Hero from "../components/hero"
@@ -10,8 +11,8 @@ function Home() {
       <section className="search-bar">
 
         <div className="search-field">
-          <small>📍 LIEU DE PRISE EN CHARGE</small>
-          <span>Paris — Gare de Lyon</span>
+          <small>📍 POINTS DE RETRAIT</small>
+          <span>Gare de Lyon-Part-Dieu ou Aéroport Lyon-Saint Exupéry</span>
         </div>
 
         <div className="search-field">
@@ -29,9 +30,9 @@ function Home() {
           <span>Tous⌄</span>
         </div>
 
-        <button className="search-button">
-          🔍 Rechercher
-        </button>
+        <Link className="search-button" to="/flotte">
+          Voir les véhicules →
+        </Link>
 
       </section>
 

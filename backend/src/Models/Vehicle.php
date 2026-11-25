@@ -59,12 +59,12 @@ class Vehicle
     {
         $statement = $this->db->prepare("
             INSERT INTO vehicles (
-                brand, model, category, price_per_day,
+                brand, model, category, motorization, price_per_day,
                 seats, transmission, power, range_km,
                 image, description,
                 available, vehicle_status, status_reason
             ) VALUES (
-                :brand, :model, :category, :price_per_day,
+                :brand, :model, :category, :motorization, :price_per_day,
                 :seats, :transmission, :power, :range_km,
                 :image, :description,
                 1, 'available', NULL
@@ -90,6 +90,7 @@ class Vehicle
                 brand = :brand,
                 model = :model,
                 category = :category,
+                motorization = :motorization,
                 price_per_day = :price_per_day,
                 seats = :seats,
                 transmission = :transmission,
@@ -203,6 +204,7 @@ class Vehicle
             'brand' => $data['brand'],
             'model' => $data['model'],
             'category' => $data['category'],
+            'motorization' => $data['motorization'],
             'price_per_day' => $data['price_per_day'],
             'seats' => $data['seats'],
             'transmission' => $data['transmission'],

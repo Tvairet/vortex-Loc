@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom"
 function Hero() {
     return (
         <main className="hero">
@@ -23,12 +24,12 @@ function Hero() {
 
                 <div className="hero-actions">
 
-                    <a href="/flotte" className="btn-primary">
+                    <Link to="/flotte" className="btn-primary">
                     Découvrir la flotte <span>→</span>
-                    </a>
-                    <a href="#about" className="btn-link">
+                    </Link>
+                    <Link to="/services" className="btn-link">
                     Pourquoi nous choisir
-                    </a>
+                    </Link>
                 </div>
             </div>
         </main>

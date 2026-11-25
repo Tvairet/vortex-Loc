@@ -215,6 +215,12 @@ function Register() {
             Utilisez un mot de passe d'au moins 12 caractères.
           </p>
 
+          <p className="legal-form-notice">
+            Les données renseignées sont utilisées pour créer votre compte de démonstration.
+            Consultez la <Link to="/confidentialite">politique de confidentialité</Link>.
+            Utilisez de préférence des informations fictives pour les essais.
+          </p>
+
           <button
             type="submit"
             className="register-submit"

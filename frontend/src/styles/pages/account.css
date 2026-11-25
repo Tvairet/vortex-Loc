@@ -365,3 +365,284 @@
     flex-direction: column;
   }
 }
+
+/* ==========================================================
+   LOT 10 — ESPACE CLIENT RESPONSIVE
+   Correctif purement visuel : aucun impact sur les réservations.
+   ========================================================== */
+
+/* La grille et ses enfants ne doivent jamais forcer un débordement. */
+.account-content,
+.account-grid,
+.account-card,
+.account-reservations,
+.account-reservation,
+.account-reservation-top,
+.account-reservation-details {
+  min-width: 0;
+}
+
+.account-heading h1,
+.account-card-header h2,
+.account-reservation-top > strong,
+.account-reservation-details p,
+.account-information strong {
+  overflow-wrap: anywhere;
+}
+
+.account-reservation-top > strong {
+  min-width: 0;
+  flex: 1 1 180px;
+  line-height: 1.4;
+}
+
+.account-status {
+  flex: 0 0 auto;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+/* Les options choisies font partie du détail d'une réservation.
+   Elles occupent toute la largeur disponible, y compris sur mobile. */
+.account-reservation-details > .reservation-saved-options {
+  grid-column: 1 / -1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: #111214;
+  border: 1px solid #303134;
+}
+
+.account-reservation-details .reservation-saved-options > strong {
+  color: #c6ff2e;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.account-reservation-details .reservation-saved-options p {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+  margin: 0;
+  min-width: 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.account-reservation-details .reservation-saved-options p span {
+  min-width: 0;
+  color: #e0e1e4;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  text-transform: none;
+  overflow-wrap: anywhere;
+}
+
+/* Mettre en évidence le tarif final sans changer son calcul. */
+.account-reservation-details > p:last-child {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding-top: 16px;
+  border-top: 1px solid #35373b;
+}
+
+.account-reservation-details > p:last-child strong {
+  color: #c6ff2e;
+  font-size: 18px;
+}
+
+/* Boutons adaptés au toucher et aux libellés longs. */
+.account-button,
+.account-cancel-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  min-height: 44px;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.account-modal-overlay {
+  padding: 16px;
+  padding-top: max(16px, env(safe-area-inset-top));
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+  overscroll-behavior: contain;
+}
+
+.account-modal {
+  min-width: 0;
+  max-height: calc(100vh - 32px);
+  max-height: calc(100dvh - 32px);
+  overscroll-behavior: contain;
+}
+
+.account-modal h2,
+.account-modal > p {
+  overflow-wrap: anywhere;
+}
+
+.account-modal-actions button {
+  min-width: 0;
+  min-height: 44px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.account-page :is(.account-button, .account-cancel-button, .account-modal-actions button):focus-visible {
+  outline: 2px solid #c6ff2e;
+  outline-offset: 3px;
+}
+
+/* Écran portable / petite tablette : laisser respirer les réservations. */
+@media (max-width: 1100px) {
+  .account-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 22px;
+  }
+
+  .account-heading {
+    margin-bottom: 38px;
+  }
+}
+
+@media (max-width: 600px) {
+  .account-content {
+    padding: 122px 5% 68px;
+  }
+
+  .account-heading {
+    margin-bottom: 30px;
+  }
+
+  .account-eyebrow {
+    font-size: 10px;
+    letter-spacing: 1.8px;
+    line-height: 1.6;
+  }
+
+  .account-heading h1 {
+    margin-top: 14px;
+    font-size: clamp(32px, 9vw, 46px);
+    line-height: 1.1;
+    letter-spacing: -0.04em;
+  }
+
+  .account-heading p {
+    margin-top: 16px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .account-card {
+    padding: 20px;
+  }
+
+  .account-card-header {
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .account-card-header h2 {
+    font-size: clamp(18px, 5.8vw, 22px);
+    line-height: 1.25;
+  }
+
+  .account-card-icon {
+    font-size: 22px;
+  }
+
+  .account-information {
+    gap: 22px;
+  }
+
+  .account-reservations {
+    gap: 16px;
+  }
+
+  .account-reservation {
+    padding: 16px;
+  }
+
+  .account-reservation-top {
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .account-reservation-top > strong {
+    flex-basis: 100%;
+    font-size: 16px;
+  }
+
+  .account-reservation-details {
+    gap: 16px;
+  }
+
+  .account-reservation-details > .reservation-saved-options {
+    padding: 12px;
+  }
+
+  .account-cancel-button,
+  .account-empty .account-button {
+    width: 100%;
+    padding: 13px 12px;
+  }
+
+  .account-modal-overlay {
+    padding: 12px;
+  }
+
+  .account-modal {
+    padding: 20px;
+    max-height: calc(100vh - 24px);
+    max-height: calc(100dvh - 24px);
+  }
+
+  .account-modal h2 {
+    font-size: clamp(20px, 6vw, 26px);
+    line-height: 1.2;
+  }
+
+  .account-modal > p {
+    font-size: 14px;
+  }
+
+  .account-modal-actions {
+    margin-top: 20px;
+    gap: 10px;
+  }
+
+  .account-modal-actions button {
+    padding: 13px;
+  }
+}
+
+@media (max-width: 360px) {
+  .account-card {
+    padding: 16px;
+  }
+
+  .account-reservation {
+    padding: 13px;
+  }
+
+  .account-modal {
+    padding: 16px;
+  }
+}
+

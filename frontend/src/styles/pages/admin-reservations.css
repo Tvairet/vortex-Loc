@@ -238,3 +238,134 @@
   margin-top: 9px;
   line-height: 1.5;
 }
+
+/* LOT 11 — Cartes, boutons et fenêtre de confirmation responsive */
+.admin-reservation-card,
+.admin-reservation-heading,
+.admin-reservation-heading > div,
+.admin-reservation-details,
+.admin-reservation-details > div {
+  min-width: 0;
+}
+
+.admin-reservation-heading h2 {
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.admin-reservation-actions,
+.admin-modal-actions {
+  flex-wrap: wrap;
+}
+
+.admin-reservation-actions > button,
+.admin-modal-actions > button {
+  min-width: 0;
+  min-height: 44px;
+  max-width: 100%;
+  white-space: normal;
+  line-height: 1.4;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.admin-modal {
+  min-width: 0;
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+@media (min-width: 601px) and (max-width: 1000px) {
+  .admin-reservation-details {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px 18px;
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-reservations-list {
+    gap: 14px;
+  }
+
+  .admin-reservation-card {
+    padding: 19px;
+  }
+
+  .admin-reservation-heading {
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .admin-reservation-heading h2 {
+    margin-top: 8px;
+    font-size: clamp(18px, 5vw, 22px);
+  }
+
+  .admin-reservation-details {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .admin-reservation-details strong {
+    display: block;
+    line-height: 1.45;
+  }
+
+  .admin-reservation-actions,
+  .admin-modal-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .admin-reservation-actions > button,
+  .admin-modal-actions > button {
+    width: 100%;
+    flex: 0 0 auto;
+  }
+
+  .admin-modal-overlay {
+    align-items: center;
+    padding: 16px;
+  }
+
+  .admin-modal {
+    padding: 22px 19px;
+    max-height: calc(100dvh - 32px);
+  }
+
+  .admin-modal h2 {
+    font-size: clamp(19px, 5.8vw, 25px);
+    overflow-wrap: anywhere;
+  }
+
+  .admin-modal p {
+    overflow-wrap: anywhere;
+  }
+
+  .admin-vehicle-history {
+    margin-top: 20px;
+    padding-top: 20px;
+  }
+
+  .admin-vehicle-history-item {
+    padding: 14px;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 360px) {
+  .admin-reservation-card {
+    padding: 15px;
+  }
+
+  .admin-modal-overlay {
+    padding: 10px;
+  }
+
+  .admin-modal {
+    max-height: calc(100dvh - 20px);
+    padding: 18px 15px;
+  }
+}

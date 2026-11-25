@@ -39,16 +39,7 @@ class ReservationController
                 return;
             }
 
-            // Vérification de l'origine pour la requête POST
-            $expectedOrigin = 'http://localhost:5173';
-            $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-
-            if ($origin !== $expectedOrigin) {
-                Response::json([
-                    'message' => 'Origine de requête non autorisée.'
-                ], 403);
-                return;
-            }
+            // Origine et jeton CSRF vérifiés par le middleware central.
 
             $data = json_decode(
                 file_get_contents('php://input'),
@@ -141,16 +132,7 @@ class ReservationController
                 return;
             }
 
-            // Vérifier l'origine de la requête
-            if (
-                ($_SERVER['HTTP_ORIGIN'] ?? '') !==
-                'http://localhost:5173'
-            ) {
-                Response::json([
-                    'message' => 'Origine non autorisée.'
-                ], 403);
-                return;
-            }
+            // Origine et jeton CSRF vérifiés par le middleware central.
 
             // Vérifier l'identifiant
             if (!ctype_digit($id) || (int) $id < 1) {

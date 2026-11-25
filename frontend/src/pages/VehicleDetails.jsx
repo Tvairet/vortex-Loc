@@ -75,10 +75,15 @@ function VehicleDetails() {
           <div className="details-grid">
 
             <div className="details-image">
-              <img
-                src={vehicle.image || "/images/hero-taycan.png"}
-                alt={`${vehicle.brand} ${vehicle.model}`}
-              />
+              {vehicle.image ? (
+                <img src={vehicle.image} alt={`${vehicle.brand} ${vehicle.model}`} />
+              ) : (
+                <div className="details-image-placeholder">
+                  <span aria-hidden="true">⚡</span>
+                  <strong>VORTEX'LOC</strong>
+                  <p>Visuel du véhicule à venir</p>
+                </div>
+              )}
             </div>
 
             <div className="details-content">
@@ -89,6 +94,12 @@ function VehicleDetails() {
 
               <p className="details-brand">
                 {vehicle.brand.toUpperCase()}
+                {" · "}
+                {vehicle.motorization === "electric"
+                  ? "100 % électrique"
+                  : vehicle.motorization === "thermal"
+                    ? "Thermique"
+                    : "Motorisation à préciser"}
               </p>
 
               <h1>{vehicle.model}</h1>
@@ -112,11 +123,11 @@ function VehicleDetails() {
                 </div>
 
                 <div>
-                  <small>AUTONOMIE</small>
+                  <small>{vehicle.motorization === "electric" ? "AUTONOMIE" : "MOTORISATION"}</small>
                   <strong>
-                    {vehicle.range_km != null
-                      ? `${vehicle.range_km} km`
-                      : "Non renseignée"}
+                    {vehicle.motorization === "electric"
+                      ? vehicle.range_km != null ? `${vehicle.range_km} km` : "Non renseignée"
+                      : vehicle.motorization === "thermal" ? "Thermique" : "À préciser"}
                   </strong>
                 </div>
 
@@ -131,6 +142,16 @@ function VehicleDetails() {
                 </div>
 
               </div>
+
+              {vehicle.rental_terms && (
+                <p className="details-kilometers">
+                  <strong>{vehicle.rental_terms.included_km_per_day} km/jour inclus</strong>
+                  {" · "}
+                  {Number(vehicle.rental_terms.extra_km_rate).toLocaleString("fr-FR", {
+                    style: "currency", currency: "EUR"
+                  })} par km supplémentaire au retour
+                </p>
+              )}
 
               <Link
                 to={`/reservation/${vehicle.id}`}
