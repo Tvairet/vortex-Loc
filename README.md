@@ -4,6 +4,11 @@ Application de démonstration de location de véhicules réalisée pour le titre
 
 [Consulter le site sur Alwaysdata](https://vortexloc.alwaysdata.net/) · [Ouvrir le catalogue](https://vortexloc.alwaysdata.net/flotte)
 
+## Documents pour le jury
+
+- [Dossier de projet (PDF, 45 pages)](frontend/public/docs/dossier.pdf)
+- [Présentation orale de Vairet Tristan (PowerPoint, 25 diapositives)](soutenance/VortexLoc_Soutenance_Vairet_Tristan.pptx)
+
 ## Découvrir le projet
 
 Depuis l’accueil, choisir **Découvrir la flotte**, ouvrir la fiche d’un véhicule, puis accéder au formulaire de réservation. L’espace compte regroupe les demandes du client. Le serveur recalcule le prix à partir du catalogue et vérifie la disponibilité avant l’enregistrement.
